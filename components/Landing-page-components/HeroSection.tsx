@@ -44,7 +44,7 @@ export default function HeroSection() {
           </span>
         </h1>
 
-        <h2 className="text-xl font-medium sm:text-[22px] mt-4 text-gray-500 max-w-2xl mx-auto">
+        <h2 className="text-xl font-medium sm:text-[21px] mt-4 text-gray-500 max-w-2xl mx-auto">
           Automatically generate professional READMEs from your codebase.
         </h2>
       </div>
