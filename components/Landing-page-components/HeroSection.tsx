@@ -1,8 +1,28 @@
+"use client";
+
 import { Sparkles, Link as LinkIcon } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
+import axios from "axios";
 
 export default function HeroSection() {
+  const [githubLink, setGithubLink] = useState("");
+
+  function checkGithubLink(link: string) {
+    const pattern = /^https:\/\/github\.com\/[^\/]+\/[^\/]+(?:\/)?$/;
+    return pattern.test(link);
+  }
+
+  const handleSubmit = async () => {
+    if (!checkGithubLink(githubLink)) {
+      toast.error("Enter a valid Github Repo link");
+    } else {
+      await axios.post("/api/generate-readme/", { githubLink });
+    }
+  };
+
   return (
     <div className="text-center">
       {/* Badge */}
@@ -55,6 +75,10 @@ export default function HeroSection() {
           <div className="relative">
             <LinkIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-rose-400" />
             <Input
+              value={githubLink}
+              onChange={(e) => {
+                setGithubLink(e.target.value);
+              }}
               type="link"
               placeholder="https://github.com/username/repo"
               className="w-full h-14 pl-12 pr-40 text-base rounded-xl border-2 border-rose-200/50 
@@ -64,6 +88,7 @@ export default function HeroSection() {
             />
 
             <Button
+              onClick={handleSubmit}
               type="submit"
               variant="outline"
               className="absolute right-3 top-1/2 -translate-y-1/2 h-10 px-6 py-2.5 rounded-lg text-base
@@ -76,8 +101,9 @@ export default function HeroSection() {
 
               "
             >
-              Generate
+              Generate →
             </Button>
+            <Toaster position="top-center" />
           </div>
         </div>
       </div>
