@@ -17,6 +17,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
+
     // this will make the directory. function is called.
     const finalDestination = prepareClonePath(githubLink);
 
@@ -30,8 +31,10 @@ export async function POST(req: NextRequest) {
       `${venvPython} ${pythonScriptPath} ${finalDestination}`
     );
 
+    const readmePath = path.join(finalDestination, "readme.md");
+
     // You can return the summary here or pass it to GPT for README gen
-    return NextResponse.json({ readme: stdout.trim() });
+    return NextResponse.json({ readme: stdout.trim(), path: readmePath });
   } catch (err) {
     console.error(err);
     return NextResponse.json(

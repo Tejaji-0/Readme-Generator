@@ -6,21 +6,30 @@ import { Button } from "../ui/button";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function HeroSection() {
   const [githubLink, setGithubLink] = useState("");
+  const router = useRouter();
 
   function checkGithubLink(link: string) {
     const pattern = /^https:\/\/github\.com\/[^\/]+\/[^\/]+(?:\/)?$/;
     return pattern.test(link);
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!checkGithubLink(githubLink)) {
       toast.error("Enter a valid Github Repo link");
-    } else {
-      await axios.post("/api/generate-readme/", { githubLink });
+      return;
     }
+    axios.post("/api/generate-readme", { githubLink }).then((res) => {
+      const readmePath = res.data.path;
+      localStorage.setItem("readmePath", readmePath);
+      console.log(readmePath);
+    });
+
+    // redirect to the my-readme page
+    router.push("/my-readme");
   };
 
   return (
