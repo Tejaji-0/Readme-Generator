@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { prepareClonePath } from "../lib/make-dir";
 import { cloneRepo } from "../lib/clone-repo";
 import path from "path";
-import { spawn } from "child_process";
+import { exec } from "child_process";
+import util from "util";
+
+const execPromise = util.promisify(exec);
 
 export async function POST(req: NextRequest) {
   try {
@@ -20,12 +23,15 @@ export async function POST(req: NextRequest) {
     //clonnig the repo
     await cloneRepo(githubLink, finalDestination);
 
-    // Step 3: Call Python summarizer
-    const summary = await runPythonSummarizer(finalDestination);
+    // 📌 Call the Python agent
+    const pythonScriptPath = path.resolve("summariser-llm/agents.py");
+    const venvPython = path.resolve("summariser-llm/venv/bin/python");
+    const { stdout } = await execPromise(
+      `${venvPython} ${pythonScriptPath} ${finalDestination}`
+    );
 
-    console.log(summary);
     // You can return the summary here or pass it to GPT for README gen
-    return NextResponse.json({ success: true, summary });
+    return NextResponse.json({ readme: stdout.trim() });
   } catch (err) {
     console.error(err);
     return NextResponse.json(
@@ -37,43 +43,4 @@ export async function POST(req: NextRequest) {
   }
 
   return NextResponse.json({ success: true });
-}
-
-async function runPythonSummarizer(clonedPath: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const pythonPath = path.join(
-      process.cwd(),
-      "llm-summarizer",
-      "summariser.py"
-    );
-
-    const pythonExecutable = path.join(
-      process.cwd(),
-      "llm-summarizer",
-      "venv",
-      "bin",
-      "python"
-    );
-
-    const python = spawn(pythonExecutable, [pythonPath, clonedPath]);
-
-    let result = "";
-    let error = "";
-
-    python.stdout.on("data", (data) => {
-      result += data.toString();
-    });
-
-    python.stderr.on("data", (data) => {
-      error += data.toString();
-    });
-
-    python.on("close", (code) => {
-      if (code === 0) {
-        resolve(result);
-      } else {
-        reject(new Error(`Python script failed: ${error}`));
-      }
-    });
-  });
 }
