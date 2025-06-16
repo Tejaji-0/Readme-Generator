@@ -66,17 +66,3 @@ Readme.ai is a tool that automatically generates `README.md` files for your code
     npm install # or yarn install or pnpm install
     npm run dev
     ```
-
-## File Summaries
--   **next.config.ts**: Primary configuration file for the Next.js application, allowing customization of build-time and runtime settings.
--   **app/page.tsx**: Defines the main landing page, rendering `HeroSection`, `DemoSection`, `HowItWorks`, and `CTA` components.
--   **app/layout.tsx**: Defines the root layout, setting up basic HTML structure, configuring fonts, defining global metadata (title, description), rendering `<Header>` and `<Footer>` components and setting the background styles.
--   **app/api/generate-readme/route.ts**: Defines an API route for generating a README file summary, cloning a GitHub repository, and executing a Python script for summarization.
--   **app/api/lib/clone-repo.ts**: Defines a utility function, `cloneRepo`, to clone Git repositories using the `simple-git` library.
--   **summariser-llm/requirements.txt**: Specifies Python package dependencies like `langgraph`, `langchain`, and `google-generativeai`.
--   **summariser-llm/tools.py**: Provides utility functions for interacting with the local file system, including setting the repository path, getting the file tree, and reading file contents.
--   **summariser-llm/prompts.py**: Defines prompt templates for the LLM, including prompts for selecting important files, summarizing files, and generating the README.
--   **summariser-llm/agents.py**: Defines an agent that orchestrates the process of generating a `README.md` file using the Gemini language model, including file selection, summarization, and README generation.
--   **lib/utils.ts**: Defines a utility function `cn` for simplifying conditional class name management in React components using `clsx` and `tailwind-merge`.
--   **components/common/footer.tsx**: Defines the `Footer` component, including a copyright notice and links to social media profiles.
--   **components/common/Header.tsx**: Defines the `Header` component, providing navigation with a logo and a link to the developer's GitHub profile.
