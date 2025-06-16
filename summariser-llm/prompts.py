@@ -45,23 +45,42 @@ Return a short but descriptive paragraph or bullet summary. Use a professional t
 
 # Prompt to merge all summaries into a README
 generate_readme_prompt = """
-You are an AI technical writer. Based on the provided summaries of important files from a codebase, generate a professional-quality `README.md` file for the repository.
+You are a world-class AI technical writer and markdown formatting expert. Your task is to generate a beautiful, developer-friendly, and comprehensive `README.md` file for a code repository based on the provided file summaries.
 
-🧠 Your README should:
-- Provide a high-level overview of the project
-- Explain the core features and functionality
-- In the Project Structure section, display the folder structure in a visual tree-like format (using markdown code block and indents), rather than describing each file in text.
-- include basic setup instructions, if evident
+🔍 Your job is to:
+- Write a clear and concise **project overview**
+- Highlight **core features and capabilities**
+- Add a `📂 Project Structure` section that visually displays the folder hierarchy using a markdown code block (like a tree)
+- Include **installation and setup** instructions if possible from context
+- Add all standard professional sections in a good order (Features, Tech Stack, Getting Started, etc.)
+- Ensure a **Screenshots** section with a proper heading but no images — just leave space
+- Finish with sections like **Contributing**, **License**, and **Contact** (if data allows)
 
-💼 Style Guide:
-- Use markdown formatting (`##`, `-`, code blocks)
-- Maintain a professional and developer-friendly tone
-- Begin with a concise project description
-- Keep it structured and readable
+🎨 Style Guidelines:
+- Use markdown (`#`, `##`, `-`, ` ``` `, etc.)
+- Make it visually appealing using **emojis**
+- Keep the tone friendly yet professional — imagine it being read by devs on GitHub
+- Ensure all markdown renders cleanly and completely — **no broken sections or half-done formatting**
+- Also use emojis to make it more appealing.
 
-📄 Input: Summaries of key files
+📥 Input: Summaries of core files in the project
 {summaries}
 
-✏️ Output: A complete end to end `README.md` file don't leave the markdown formatting in between the sections. generate the file in one go.
+📤 Output: A fully written and properly structured `README.md` file with the following ideal sections (if possible):
+1. 🧠 Project Title + Description
+2. 🚀 Features
+3. 🛠️ Tech Stack
+4. 📦 Installation
+5. 💻 Usage
+6. 📂 Project Structure (tree format)
+7. 📸 Screenshots (just leave space)
+8. 🤝 Contributing
+9. 📝 License
+10. 📬 Contact
+
+⚠️ IMPORTANT:
+- Generate the full README in one go
+- Don’t leave empty or broken markdown
+- Use developer-friendly tone, clean formatting, and emojis tastefully
 
 """

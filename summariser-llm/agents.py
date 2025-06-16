@@ -71,10 +71,19 @@ def agent_summarize_files(state):
 def agent_generate_readme(state):
     joined = "\n\n".join(state["summaries"])
     prompt = generate_readme_prompt.format(
-    summaries=joined,
-    instruction="Based on the following file summaries, generate a clean and concise README.md that explains the project as a whole. Do not describe each file individually. Instead, explain the purpose of the project, its core features, setup instructions, and any important dependencies or configurations."
-)
-    readme = llm.generate_content(prompt).text
+        summaries=joined,
+        instruction="Based on the following file summaries, generate a clean and concise README.md that explains the project as a whole. Do not describe each file individually. Instead, explain the purpose of the project, its core features, setup instructions, and any important dependencies or configurations."
+    )
+    
+    response = llm.generate_content(prompt)
+    
+    try:
+        # If response is chunked
+        readme = "".join([part.text for part in response.parts])
+    except AttributeError:
+        # Fallback if response is not chunked
+        readme = response.text
+
     return {"readme": readme}
 
 
