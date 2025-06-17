@@ -1,6 +1,15 @@
 import { Button } from "../ui/button";
 
-export default function CTA() {
+interface CTAProps {
+  onGenerateClick: () => void;
+}
+
+export default function CTA({ onGenerateClick }: CTAProps) {
+  const handleClick = () => {
+    // Scroll to top to show the form
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <div className="text-center py-16">
       <h1 className="text-4xl font-extrabold">
@@ -11,6 +20,7 @@ export default function CTA() {
         focused on building.
       </h2>
       <Button
+        onClick={handleClick}
         variant="outline"
         className="h-10 px-6 py-2.5 rounded-lg text-base
               bg-gradient-to-r from-rose-100 to-pink-100 

@@ -6,11 +6,13 @@ import { Button } from "../ui/button";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
-import { useRouter } from "next/navigation";
 
-export default function HeroSection() {
+interface HeroSectionProps {
+  onGenerateClick: () => void;
+}
+
+export default function HeroSection({ onGenerateClick }: HeroSectionProps) {
   const [githubLink, setGithubLink] = useState("");
-  const router = useRouter();
 
   function checkGithubLink(link: string) {
     const pattern = /^https:\/\/github\.com\/[^\/]+\/[^\/]+(?:\/)?$/;
@@ -22,19 +24,17 @@ export default function HeroSection() {
       toast.error("Enter a valid Github Repo link");
       return;
     }
+
+    // Switch to README view immediately
+    onGenerateClick();
+
+    localStorage.removeItem("projectFolder");
     axios.post("/api/generate-readme", { githubLink }).then((res) => {
-      // Instead of full path
       const fullPath = res.data.path;
-
-      // Extract folder name from full path
       const folderName = fullPath.split("/temp/")[1].split("/readme.md")[0];
-
       localStorage.setItem("projectFolder", folderName);
       console.log("Stored folder name:", folderName);
     });
-
-    // redirect to the my-readme page
-    router.push("/my-readme");
   };
 
   return (
