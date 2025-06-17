@@ -23,9 +23,14 @@ export default function HeroSection() {
       return;
     }
     axios.post("/api/generate-readme", { githubLink }).then((res) => {
-      const readmePath = res.data.path;
-      localStorage.setItem("readmePath", readmePath);
-      console.log(readmePath);
+      // Instead of full path
+      const fullPath = res.data.path;
+
+      // Extract folder name from full path
+      const folderName = fullPath.split("/temp/")[1].split("/readme.md")[0];
+
+      localStorage.setItem("projectFolder", folderName);
+      console.log("Stored folder name:", folderName);
     });
 
     // redirect to the my-readme page
