@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { ArrowLeft } from "lucide-react";
+import ReadmeInfo from "./ReadmeInfo";
 
 interface MyReadmeComponentProps {
   onBackToHome: () => void;
@@ -15,9 +16,24 @@ export default function MyReadmeComponent({
   const [loading, setLoading] = useState(true);
   const [projectFolder, setProjectFolder] = useState<string | null>(null);
 
+  // Extract project name from folder path
+  const getProjectName = (folder: string | null) => {
+    if (!folder) return undefined;
+    // Extract the last part of the folder path as project name
+    const parts = folder.split("/");
+    const projectName = parts[parts.length - 1];
+
+    // Format: replace hyphens/underscores with spaces and capitalize each word
+    return projectName
+      .replace(/[-_]/g, " ")
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+  };
+
   useEffect(() => {
     let attempts = 0;
-    const maxAttempts = 20; // 20x2s = 40s max
+    const maxAttempts = 30; // 30x2s = 60s max
 
     const checkForReadme = async (folder: string) => {
       const res = await fetch(`/api/check-readme?folder=${folder}`);
@@ -63,24 +79,35 @@ export default function MyReadmeComponent({
   }, [projectFolder]);
 
   return (
-    <main className="p-6">
-      <div className="mb-6">
-        <Button
-          onClick={onBackToHome}
-          variant="outline"
-          className="flex items-center gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Home
-        </Button>
+    <main>
+      <div className="flex flex-row-reverse justify-between px-24 my-16">
+        <div className="flex items-center justify-between">
+          <div className="mb-6">
+            <Button
+              onClick={onBackToHome}
+              variant="outline"
+              className="flex items-center rounded-full gap-2  cursor-pointer transition-all duration-200 ease-in-out border border-rose-500 shadow-md shadow-rose-100 hover:bg-rose-100/50"
+            >
+              <ArrowLeft className="h-4 w-4 text-rose-500" />
+              Back to Home
+            </Button>
+          </div>
+        </div>
+
+        {!loading && readmeContent && !readmeContent.includes("❌") && (
+          <div className="mb-6">
+            <ReadmeInfo projectName={getProjectName(projectFolder)} />
+          </div>
+        )}
       </div>
 
-      <h1 className="text-2xl font-bold mb-4">📘 Your Generated README</h1>
       {loading ? (
         <div className="space-y-2">
           <p>⏳ Please wait while we generate your README...</p>
           {projectFolder && (
-            <p className="text-gray-600">Processing: {projectFolder}</p>
+            <p className="text-gray-600">
+              Processing: {getProjectName(projectFolder)}
+            </p>
           )}
         </div>
       ) : (
