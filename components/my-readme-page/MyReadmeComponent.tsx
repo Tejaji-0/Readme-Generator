@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { ArrowLeft } from "lucide-react";
 import ReadmeInfo from "./ReadmeInfo";
+import HighlightedEditableCode from "./HighlightedEditableCode";
 
 interface MyReadmeComponentProps {
   onBackToHome: () => void;
@@ -80,7 +81,7 @@ export default function MyReadmeComponent({
 
   return (
     <main>
-      <div className="flex flex-row-reverse justify-between px-24 my-16">
+      <div className="flex flex-row-reverse justify-between px-24 my-10">
         <div className="flex items-center justify-between">
           <div className="mb-6">
             <Button
@@ -111,9 +112,7 @@ export default function MyReadmeComponent({
           )}
         </div>
       ) : (
-        <pre className="bg-gray-100 p-4 rounded whitespace-pre-wrap">
-          {readmeContent}
-        </pre>
+        <HighlightedEditableCode readmeContent={readmeContent} />
       )}
     </main>
   );
