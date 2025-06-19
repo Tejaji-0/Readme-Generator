@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 import { ArrowLeft } from "lucide-react";
 import ReadmeInfo from "./ReadmeInfo";
 import HighlightedEditableCode from "./HighlightedEditableCode";
+import ShimmerCodeEditor from "./ShimmerCodeEditor";
 
 interface MyReadmeComponentProps {
   onBackToHome: () => void;
@@ -95,22 +96,17 @@ export default function MyReadmeComponent({
           </div>
         </div>
 
-        {!loading && readmeContent && !readmeContent.includes("❌") && (
-          <div className="mb-6">
-            <ReadmeInfo projectName={getProjectName(projectFolder)} />
-          </div>
-        )}
+        {/* ReadmeInfo Section - Always show, but with loading state */}
+        <div className="mb-6">
+          <ReadmeInfo
+            projectName={loading ? undefined : getProjectName(projectFolder)}
+            isLoading={loading}
+          />
+        </div>
       </div>
 
       {loading ? (
-        <div className="space-y-2">
-          <p>⏳ Please wait while we generate your README...</p>
-          {projectFolder && (
-            <p className="text-gray-600">
-              Processing: {getProjectName(projectFolder)}
-            </p>
-          )}
-        </div>
+        <ShimmerCodeEditor />
       ) : (
         <HighlightedEditableCode readmeContent={readmeContent} />
       )}

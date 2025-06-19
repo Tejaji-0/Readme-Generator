@@ -1,5 +1,6 @@
 langgraph
 langchain
 google-generativeai
+groq
 tiktoken
 python-dotenv
