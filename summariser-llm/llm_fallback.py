@@ -22,8 +22,8 @@ API_KEYS = [key for key in API_KEYS if key]
 FALLBACK_MODELS = [
     "deepseek-r1-distill-llama-70b",
     "llama-3.3-70b-versatile",
-    "qwen/qwen3-32b",
-    "llama3-70b-8192"
+    "deepseek-r1-distill-llama-70b",
+    "llama-3.3-70b-versatile",
 ]
 
 class LLMFallbackManager:

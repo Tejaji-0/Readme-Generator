@@ -35,7 +35,7 @@ export default function MyReadmeComponent({
 
   useEffect(() => {
     let attempts = 0;
-    const maxAttempts = 30; // 30x2s = 60s max
+    const maxAttempts = 100; // 30x2s = 60s max
 
     const checkForReadme = async (folder: string) => {
       const res = await fetch(`/api/check-readme?folder=${folder}`);

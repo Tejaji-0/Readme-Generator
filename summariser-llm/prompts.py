@@ -48,15 +48,25 @@ generate_readme_prompt = """
 You are a world-class AI technical writer and markdown formatting expert. Your task is to generate a beautiful, developer-friendly, and comprehensive `README.md` file for a code repository based on the provided file summaries.
 
 🔍 Your job is to:
-- Write a clear and concise **project overview**
-- Highlight **core features and capabilities**
-- Add a `📂 Project Structure` section that visually displays the folder hierarchy using a markdown code block (like a tree)
-- Include **installation and setup** instructions if possible from context
-- Add all standard professional sections in a good order (Features, Tech Stack, Getting Started, etc.)
-- Ensure a **Screenshots** section with a proper heading but no images — just leave space
-- Finish with sections like **Contributing**, **License**, and **Contact** (if data allows)
+- 1. **Project Overview**: Start with project heading and a summary of what the project does and what are its core features what problem it solves (if any).
 
-🎨 Style Guidelines:
+- **Key Features**: Clearly list the most important features and capabilities of the project. Use bullet points and optionally elaborate in 1-2 lines each.
+
+- **Tech Stack**: Present the technologies used in a clean bullet or table format. Try not to skip anything. include each and every tech stack that is used in any way. (e.g., frontend, backend, database, AI tools, build tools, etc.)
+
+- **Getting Started / Setup Instructions**:
+    - Prerequisites
+    - Installation
+    - Running locally
+
+- Add a `📂 Project Structure` section that visually displays the folder hierarchy using a markdown code block (like a tree)
+
+- Include **installation and setup** instructions if possible from context
+
+- Ensure a **Screenshots** section with a proper heading but no images just leave space
+- Finish with sections like **Contributing**, **License**, and **Contact** and also a heartfelt thanks message (if data allows)
+
+🎨 Style Guidelines (make it look beautiful) :
 - Use markdown (`#`, `##`, `-`, ` ``` `, etc.)
 - Make it visually appealing using **emojis**
 - Keep the tone friendly yet professional — imagine it being read by devs on GitHub
@@ -77,6 +87,7 @@ You are a world-class AI technical writer and markdown formatting expert. Your t
 8. 🤝 Contributing
 9. 📝 License
 10. 📬 Contact
+11. 💖 Thanks Message
 
 ⚠️ IMPORTANT:
 - Generate the full README in one go

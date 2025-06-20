@@ -8,6 +8,7 @@ import os
 import re
 import json
 import sys
+import time
 
 # Load .env variables
 load_dotenv()
@@ -47,22 +48,65 @@ def agent_select_files(state):
     print("✅ Cleaned selected files:", selected_files)
     return {"selected_files": selected_files}
 
-# Step 2: Summarize selected files
+# Step 2: Summarize selected files with batching
 def agent_summarize_files(state):
+    selected_files = state["selected_files"]
     summaries = []
-    for filename in state["selected_files"]:
-        content = read_file(filename)
-        print(f"📄 Reading file: {filename}")
-        print("🔍 Content preview:", content[:200])
+    
+    # Configure batch settings
+    batch_size = int(os.getenv('BATCH_SIZE', '3'))  # Default to 3 files per batch
+    delay_between_batches = float(os.getenv('BATCH_DELAY', '2.0'))  # Default 2 seconds delay
+    
+    print(f"📊 Processing {len(selected_files)} files in batches of {batch_size}")
+    
+    # Split files into batches
+    for i in range(0, len(selected_files), batch_size):
+        batch = selected_files[i:i + batch_size]
+        batch_num = (i // batch_size) + 1
+        total_batches = (len(selected_files) + batch_size - 1) // batch_size
+        
+        print(f"🔄 Processing batch {batch_num}/{total_batches}: {batch}")
+        
+        # Process each file in the current batch
+        for filename in batch:
+            try:
+                content = read_file(filename)
+                print(f"📄 Reading file: {filename}")
+                print("🔍 Content preview:", content[:200])
 
-        if not content.strip():
-            summaries.append(f"### {filename}\n(No content found)")
-            continue
+                if not content.strip():
+                    summaries.append(f"### {filename}\n(No content found)")
+                    continue
 
-        prompt = summarize_prompt.format(filename=filename, content=content[:3000])
-        messages = [{"role": "user", "content": prompt}]
-        summary = llm.make_request(messages, max_tokens=1024)
-        summaries.append(f"### {filename}\n{summary}")
+                prompt = summarize_prompt.format(filename=filename, content=content[:3000])
+                messages = [{"role": "user", "content": prompt}]
+                
+                # Add retry logic for individual files
+                max_retries = 3
+                for attempt in range(max_retries):
+                    try:
+                        summary = llm.make_request(messages, max_tokens=1024)
+                        summaries.append(f"### {filename}\n{summary}")
+                        print(f"✅ Successfully summarized: {filename}")
+                        break
+                    except Exception as e:
+                        print(f"⚠️ Attempt {attempt + 1} failed for {filename}: {e}")
+                        if attempt == max_retries - 1:
+                            print(f"❌ Failed to summarize {filename} after {max_retries} attempts")
+                            summaries.append(f"### {filename}\n(Summary generation failed after {max_retries} attempts)")
+                        else:
+                            time.sleep(1)  # Short delay before retry
+                            
+            except Exception as e:
+                print(f"❌ Error processing file {filename}: {e}")
+                summaries.append(f"### {filename}\n(Error reading or processing file)")
+        
+        # Add delay between batches (except for the last batch)
+        if i + batch_size < len(selected_files):
+            print(f"⏳ Waiting {delay_between_batches} seconds before next batch...")
+            time.sleep(delay_between_batches)
+    
+    print(f"✅ Completed processing all {len(selected_files)} files")
     return {"summaries": summaries}
 
 # Step 3: Generate README

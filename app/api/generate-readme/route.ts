@@ -25,6 +25,7 @@ export async function POST(req: NextRequest) {
 
     // 📌 Call the Python agent
     const pythonScriptPath = path.resolve("summariser-llm/agents_groq.py");
+    // const pythonScriptPath = path.resolve("summariser-llm/agents.py");
     const venvPython = path.resolve("summariser-llm/venv/bin/python");
     const { stdout } = await execPromise(
       `${venvPython} ${pythonScriptPath} ${finalDestination}`
