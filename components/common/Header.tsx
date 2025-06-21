@@ -16,7 +16,10 @@ export default function Header() {
         </div>
       </Link>
       <div>
-        <Link href="https://github.com/LakshitAgarwal" target="_blank">
+        <Link
+          href="https://github.com/LakshitAgarwal/Readme-Generator"
+          target="_blank"
+        >
           <Github size={36} />
         </Link>
       </div>

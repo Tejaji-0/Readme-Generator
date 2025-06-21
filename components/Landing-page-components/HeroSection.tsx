@@ -32,6 +32,7 @@ export default function HeroSection({ onGenerateClick }: HeroSectionProps) {
     axios.post("/api/generate-readme", { githubLink }).then((res) => {
       const fullPath = res.data.path;
       const folderName = fullPath.split("/temp/")[1].split("/readme.md")[0];
+      localStorage.setItem("githubLink", githubLink);
       localStorage.setItem("projectFolder", folderName);
       console.log("Stored folder name:", folderName);
     });
@@ -120,6 +121,11 @@ export default function HeroSection({ onGenerateClick }: HeroSectionProps) {
             <Toaster position="top-center" />
           </div>
         </div>
+      </div>
+
+      {/* Disclaimer */}
+      <div className="text-sm text-gray-500 mt-4">
+        <h3>⚠️ AI can make mistakes. Verify before using.</h3>
       </div>
     </div>
   );

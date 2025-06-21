@@ -1,4 +1,5 @@
 import { Eye } from "lucide-react";
+import Image from "next/image";
 
 export default function DemoSection() {
   return (
@@ -19,6 +20,15 @@ export default function DemoSection() {
       </section>
 
       {/* Demo Img */}
+      <div className="flex items-center justify-center mt-16 ">
+        <Image
+          src="/demo-2.png"
+          alt="Demo"
+          width={1000}
+          height={1000}
+          className="h-full w-[80%] rounded-2xl shadow-2xl shadow-rose-900/80"
+        />
+      </div>
     </div>
   );
 }

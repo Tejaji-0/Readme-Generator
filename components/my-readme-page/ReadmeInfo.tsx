@@ -1,4 +1,6 @@
 import { Calendar, ExternalLink, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 interface ReadmeInfoProps {
   projectName?: string;
@@ -11,6 +13,15 @@ export default function ReadmeInfo({
 }: ReadmeInfoProps) {
   const data = new Date();
   const date = data.toLocaleDateString();
+
+  const [githubLink, setGithubLink] = useState("https://github.com");
+
+  useEffect(() => {
+    const githubLink = localStorage.getItem("githubLink");
+    if (githubLink) {
+      setGithubLink(githubLink);
+    }
+  }, []);
 
   if (isLoading) {
     return (
@@ -76,10 +87,12 @@ export default function ReadmeInfo({
         </div>
 
         {/* Repo Link */}
-        <div className="flex items-center gap-2">
-          <ExternalLink className="h-4 w-4 text-rose-500" />
-          <p className="text-sm text-gray-600">Visit Repository</p>
-        </div>
+        <Link href={githubLink} target="_blank">
+          <div className="flex items-center gap-2">
+            <ExternalLink className="h-4 w-4 text-rose-500" />
+            <p className="text-sm text-gray-600">Visit Repository</p>
+          </div>
+        </Link>
 
         {/* Date */}
         <div className="flex items-center gap-2">

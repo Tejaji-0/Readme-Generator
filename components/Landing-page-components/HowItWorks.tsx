@@ -8,7 +8,7 @@ import {
 
 export default function HowItWorks() {
   return (
-    <div className="py-16 mt-16">
+    <div className="py-16 mt-4">
       <h1 className="text-center text-3xl font-bold text-rose-500 mb-12">
         How It Works
       </h1>
