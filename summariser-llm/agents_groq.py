@@ -25,13 +25,13 @@ class GraphState(TypedDict):
     summaries: List[str]
     readme: str
 
-# Step 1: Fast file selection with existing prompt
+# Step 1: Balanced file selection (speed + accuracy)
 def agent_select_files(state):
     file_tree = get_file_tree()
     
-    # Speed optimization: Limit files shown to LLM
-    max_files_to_show = int(os.getenv('MAX_FILES_TO_SHOW', '50'))
-    max_files_to_process = int(os.getenv('MAX_FILES_TO_PROCESS', '12'))
+    # Balanced settings for speed + accuracy
+    max_files_to_show = int(os.getenv('MAX_FILES_TO_SHOW', '75'))  # Show more files to LLM
+    max_files_to_process = int(os.getenv('MAX_FILES_TO_PROCESS', '15'))  # Process more files for accuracy
     
     # Pre-filter: Remove obviously unimportant files for speed
     filtered_tree = []
@@ -41,23 +41,21 @@ def agent_select_files(state):
         if not any(skip in file_lower for skip in [
             '.git/', 'node_modules/', '__pycache__/', '.venv/', 'venv/',
             '.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico',
-            '.css', '.scss', '.sass', '.less',
-            'test/', 'tests/', '.test.', '.spec.',
-            '.min.js', '.min.css', 'dist/', 'build/'
+            '.min.js', '.min.css', 'dist/', 'build/', '.cache/'
         ]):
             filtered_tree.append(file_path)
     
-    # Limit the tree size for faster LLM processing
+    # Show more files for better selection
     display_tree = filtered_tree[:max_files_to_show]
     
-    print(f"⚡ Fast selection: {len(file_tree)} → {len(filtered_tree)} → {len(display_tree)} files")
+    print(f"⚡ Balanced selection: {len(file_tree)} → {len(filtered_tree)} → {len(display_tree)} files")
     
     # Use existing prompt
     prompt = select_files_prompt.format(file_tree="\n".join(display_tree))
     messages = [{"role": "user", "content": prompt}]
     
-    # Reduced token limit for faster response
-    raw = llm.make_request(messages, max_tokens=512)
+    # Increased token limit for better selection accuracy
+    raw = llm.make_request(messages, max_tokens=800)
     raw = raw.strip()
 
     # Parse selected files
@@ -70,101 +68,147 @@ def agent_select_files(state):
             selected_files = [line.strip().strip('"').strip(',') for line in raw.splitlines() if line.strip()]
     except Exception as e:
         print("⚠️ Parsing failed, using fallback selection", e)
-        # Smart fallback for speed
-        selected_files = display_tree[:max_files_to_process]
+        # Smarter fallback for better accuracy
+        important_files = []
+        for file_path in display_tree:
+            if any(pattern in file_path.lower() for pattern in [
+                'main', 'index', 'app', 'server', 'config', 'package', 'requirements',
+                'setup', 'dockerfile', 'readme', '.env', 'route'
+            ]):
+                important_files.append(file_path)
+        selected_files = important_files[:max_files_to_process] if important_files else display_tree[:max_files_to_process]
 
-    # Limit final selection for speed
+    # Balanced final selection
     final_selection = selected_files[:max_files_to_process]
-    print(f"✅ Selected {len(final_selection)} files for processing")
+    print(f"✅ Selected {len(final_selection)} files for detailed processing")
     return {"selected_files": final_selection}
 
-# Step 2: Ultra-fast bulk processing
+# Step 2: Detailed bulk processing with accuracy focus
 def agent_summarize_files(state):
     selected_files = state["selected_files"]
     summaries = []
     
-    # Speed settings
-    files_per_request = int(os.getenv('FILES_PER_REQUEST', '6'))  # More files per call
-    max_content_per_file = int(os.getenv('MAX_CONTENT_PER_FILE', '1200'))  # Smaller content
+    # Balanced settings: moderate speed, high accuracy
+    files_per_request = int(os.getenv('FILES_PER_REQUEST', '4'))  # Fewer files per call for better context
+    max_content_per_file = int(os.getenv('MAX_CONTENT_PER_FILE', '2500'))  # More content for accuracy
     
-    print(f"🚀 Ultra-fast bulk processing: {len(selected_files)} files, {files_per_request} per request")
+    print(f"🎯 Detailed bulk processing: {len(selected_files)} files, {files_per_request} per request")
     
-    # Process in bulk for maximum speed
+    # Process in smaller batches for better accuracy
     for i in range(0, len(selected_files), files_per_request):
         batch = selected_files[i:i + files_per_request]
         batch_num = (i // files_per_request) + 1
         total_batches = (len(selected_files) + files_per_request - 1) // files_per_request
         
-        print(f"⚡ Batch {batch_num}/{total_batches}: {len(batch)} files")
+        print(f"🔍 Detailed batch {batch_num}/{total_batches}: {len(batch)} files")
         
-        # Combine files for bulk processing
-        bulk_content = []
+        # Prepare detailed content for each file
+        detailed_files = []
         for filename in batch:
             try:
                 content = read_file(filename)
                 if content.strip():
-                    # Aggressively truncate for speed
+                    # Keep more content for better understanding
                     truncated = content[:max_content_per_file]
-                    bulk_content.append(f"=== {filename} ===\n{truncated}")
+                    # Add file context for better processing
+                    file_info = f"""
+=== FILE: {filename} ===
+File Path: {filename}
+Content Length: {len(content)} characters
+Content:
+{truncated}
+{'... (truncated)' if len(content) > max_content_per_file else ''}
+"""
+                    detailed_files.append(file_info)
                 else:
-                    bulk_content.append(f"=== {filename} ===\n(Empty file)")
+                    detailed_files.append(f"=== FILE: {filename} ===\n(Empty file)")
             except Exception as e:
-                bulk_content.append(f"=== {filename} ===\n(Read error: {str(e)[:100]})")
+                detailed_files.append(f"=== FILE: {filename} ===\n(Error reading: {str(e)})")
         
-        # Create bulk prompt using existing summarize_prompt as template
-        bulk_prompt = f"""Process these {len(batch)} files and provide a concise summary for each:
+        # Enhanced bulk prompt with detailed instructions
+        bulk_prompt = f"""You are analyzing {len(batch)} files from a software project. For each file, provide a comprehensive summary that includes:
 
-{chr(10).join(bulk_content)}
+1. **Purpose**: What this file does and its role in the project
+2. **Key Components**: Important functions, classes, components, or configurations
+3. **Dependencies**: Notable imports, libraries, or frameworks used
+4. **Functionality**: Core logic, API endpoints, data models, or business rules
+5. **Integration**: How it connects to other parts of the application
 
-For each file, provide:
-- What this file does
-- Important functions, classes, or components
-- How it fits into the application
+Be detailed and technical. Focus on understanding the project architecture and functionality.
 
-Format as:
-### filename1
-[summary]
+{chr(10).join(detailed_files)}
 
-### filename2  
-[summary]"""
+For each file, format your response as:
+### {filename}
+**Purpose:** [What this file does]
+**Key Components:** [Important functions/classes/components]
+**Dependencies:** [Notable imports/libraries]
+**Functionality:** [Core logic and features]
+**Integration:** [How it fits in the project]
+
+Provide comprehensive summaries for each file:"""
         
         try:
             messages = [{"role": "user", "content": bulk_prompt}]
-            # Increased tokens but still reasonable for speed
-            bulk_response = llm.make_request(messages, max_tokens=1500)
+            # Increased token limit for detailed summaries
+            bulk_response = llm.make_request(messages, max_tokens=2500)
             
             if bulk_response.strip():
                 summaries.append(bulk_response)
-                print(f"✅ Processed {len(batch)} files successfully")
+                print(f"✅ Generated detailed summaries for {len(batch)} files")
             else:
-                # Minimal fallback
+                # Better fallback using individual processing
+                print(f"⚠️ Bulk failed, falling back to individual processing for batch {batch_num}")
                 for filename in batch:
-                    summaries.append(f"### {filename}\n(Processing skipped)")
+                    try:
+                        content = read_file(filename)[:2000]  # Reasonable content size
+                        if content.strip():
+                            individual_prompt = summarize_prompt.format(filename=filename, content=content)
+                            individual_response = llm.make_request([{"role": "user", "content": individual_prompt}], max_tokens=800)
+                            summaries.append(f"### {filename}\n{individual_response}")
+                        else:
+                            summaries.append(f"### {filename}\n(Empty file)")
+                    except Exception as e:
+                        summaries.append(f"### {filename}\n(Processing failed: {str(e)})")
                     
         except Exception as e:
-            print(f"⚠️ Batch {batch_num} failed: {e}")
-            # Quick fallback
+            print(f"⚠️ Batch {batch_num} failed, using individual fallback: {e}")
+            # Individual processing fallback for accuracy
             for filename in batch:
-                summaries.append(f"### {filename}\n(Failed to process)")
+                try:
+                    content = read_file(filename)[:2000]
+                    if content.strip():
+                        individual_prompt = summarize_prompt.format(filename=filename, content=content)
+                        individual_response = llm.make_request([{"role": "user", "content": individual_prompt}], max_tokens=800)
+                        summaries.append(f"### {filename}\n{individual_response}")
+                    else:
+                        summaries.append(f"### {filename}\n(Empty file)")
+                except Exception as e:
+                    summaries.append(f"### {filename}\n(Failed to process)")
     
-    print(f"✅ Bulk processing complete: {total_batches} API calls total")
+    print(f"✅ Detailed processing complete: {total_batches} API calls with enhanced accuracy")
     return {"summaries": summaries}
 
-# Step 3: Fast README generation (keep existing)
+# Step 3: Enhanced README generation with more detail
 def agent_generate_readme(state):
     summaries = state["summaries"]
 
-    # Speed optimization: Limit summaries
-    max_summaries = int(os.getenv('MAX_SUMMARIES_FOR_README', '20'))
+    # Allow more summaries for comprehensive README
+    max_summaries = int(os.getenv('MAX_SUMMARIES_FOR_README', '25'))
     limited_summaries = summaries[:max_summaries]
 
     joined = "\n\n".join(limited_summaries)
 
-    # Use existing prompt
-    prompt = generate_readme_prompt.format(summaries=joined)
+    # Enhanced instruction for more detailed README
+    enhanced_instruction = """
+IMPORTANT: Create a comprehensive and detailed README that provides developers with a complete understanding of the project. Include specific technical details, proper setup instructions, and thorough feature descriptions. Make it professional and informative while being well-structured and visually appealing.
+"""
+
+    # Use existing prompt with enhancement
+    prompt = generate_readme_prompt.format(summaries=joined) + enhanced_instruction
     
-    # Optimized token limit
-    response = llm.make_request([{"role": "user", "content": prompt}], max_tokens=3500)
+    # Increased token limit for detailed README
+    response = llm.make_request([{"role": "user", "content": prompt}], max_tokens=4500)
     
     return {"readme": response}
 
