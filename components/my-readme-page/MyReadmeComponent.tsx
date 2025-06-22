@@ -82,33 +82,35 @@ export default function MyReadmeComponent({
 
   return (
     <main>
-      <div className="flex flex-row-reverse justify-between px-24 my-10">
-        <div className="flex items-center justify-between">
-          <div className="mb-6">
-            <Button
-              onClick={onBackToHome}
-              variant="outline"
-              className="flex items-center rounded-full gap-2  cursor-pointer transition-all duration-200 ease-in-out border border-rose-500 shadow-md shadow-rose-100 hover:bg-rose-100/50"
-            >
-              <ArrowLeft className="h-4 w-4 text-rose-500" />
-              Back to Home
-            </Button>
-          </div>
-        </div>
-
-        {/* ReadmeInfo Section - Always show, but with loading state */}
-        <div className="mb-6">
-          <ReadmeInfo
-            projectName={loading ? undefined : getProjectName(projectFolder)}
-            isLoading={loading}
-          />
-        </div>
-      </div>
-
       {loading ? (
         <ShimmerCodeEditor />
       ) : (
-        <HighlightedEditableCode readmeContent={readmeContent} />
+        <>
+          <div className="flex flex-row-reverse justify-between px-24 my-10">
+            <div className="flex items-center justify-between">
+              <div className="mb-6">
+                <Button
+                  onClick={onBackToHome}
+                  variant="outline"
+                  className="flex items-center rounded-full gap-2  cursor-pointer transition-all duration-200 ease-in-out border border-rose-500 shadow-md shadow-rose-100 hover:bg-rose-100/50"
+                >
+                  <ArrowLeft className="h-4 w-4 text-rose-500" />
+                  Back to Home
+                </Button>
+              </div>
+            </div>
+
+            {/* ReadmeInfo Section - Show when not loading */}
+            <div className="mb-6">
+              <ReadmeInfo
+                projectName={getProjectName(projectFolder)}
+                isLoading={false}
+              />
+            </div>
+          </div>
+
+          <HighlightedEditableCode readmeContent={readmeContent} />
+        </>
       )}
     </main>
   );
