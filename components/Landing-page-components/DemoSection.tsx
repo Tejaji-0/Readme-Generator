@@ -1,5 +1,6 @@
 import { Eye } from "lucide-react";
 import Image from "next/image";
+import { MovingBorder } from "@/components/ui/moving-border";
 
 export default function DemoSection() {
   return (
@@ -19,15 +20,33 @@ export default function DemoSection() {
         </div>
       </section>
 
-      {/* Demo Img */}
-      <div className="flex items-center justify-center mt-16 ">
-        <Image
-          src="/demo-2.png"
-          alt="Demo"
-          width={1000}
-          height={1000}
-          className="h-full w-[80%] rounded-2xl shadow-2xl shadow-rose-900/80"
-        />
+      {/* Demo Img with Moving Border */}
+      <div className="flex items-center justify-center mt-16">
+        <div
+          className="relative w-[80%] shadow-2xl shadow-rose-900/70 overflow-hidden p-[2px]"
+          style={{ borderRadius: "1rem" }}
+        >
+          {/* Moving Border Effect */}
+          <div className="absolute inset-0" style={{ borderRadius: "1rem" }}>
+            <MovingBorder duration={8000} rx="1rem" ry="1rem">
+              <div className="h-36 w-36 bg-[radial-gradient(#e11d48_30%,#f43f5e_50%,#fda4af_70%,transparent_95%)] opacity-90 blur-md" />
+            </MovingBorder>
+          </div>
+
+          {/* Image with Glass Effect */}
+          <div
+            className="relative flex items-center justify-center bg-gradient-to-br from-white/10 via-white/5 to-white/10 backdrop-blur-xl border border-white/20"
+            style={{ borderRadius: "calc(1rem * 0.96)" }}
+          >
+            <Image
+              src="/demo-2.png"
+              alt="Demo"
+              width={1000}
+              height={1000}
+              className="h-full w-full rounded-2xl"
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
