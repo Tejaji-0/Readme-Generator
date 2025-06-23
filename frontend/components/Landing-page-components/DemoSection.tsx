@@ -1,6 +1,7 @@
 import { Eye } from "lucide-react";
 import Image from "next/image";
 import { MovingBorder } from "@/components/ui/moving-border";
+import demo2 from "@/public/demo-2.png";
 
 export default function DemoSection() {
   return (
@@ -39,7 +40,7 @@ export default function DemoSection() {
             style={{ borderRadius: "calc(1rem * 0.96)" }}
           >
             <Image
-              src="/demo-2.png"
+              src={demo2}
               alt="Demo"
               width={1000}
               height={1000}
