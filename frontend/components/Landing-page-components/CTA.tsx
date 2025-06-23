@@ -1,10 +1,6 @@
 import { Button } from "../ui/button";
 
-interface CTAProps {
-  onGenerateClick: () => void;
-}
-
-export default function CTA({ onGenerateClick }: CTAProps) {
+export default function CTA() {
   const handleClick = () => {
     // Scroll to top to show the form and trigger generate click
     window.scrollTo({ top: 0, behavior: "smooth" });
