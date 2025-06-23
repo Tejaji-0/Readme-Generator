@@ -1,127 +1,80 @@
-# README Generator
+# 🧠 README Generator Project
+This project aims to create a comprehensive and detailed README file for a given software project, providing developers with a complete understanding of the project's features, setup instructions, and technical details.
 
-A full-stack application that automatically generates professional READMEs from your GitHub repositories using AI.
+## 🚀 Features
+- **Automated README Generation**: Generates a detailed README file based on the project's code structure and files.
+- **Customizable Templates**: Allows for customization of the README template to fit the project's specific needs.
+- **Technical Detailing**: Provides in-depth technical details about the project, including dependencies, setup instructions, and feature descriptions.
+- **Code Analysis**: Analyzes the project's code to extract relevant information and generate the README content.
 
-## 🏗️ Project Structure
+## 🛠️ Tech Stack
+- **Frontend**:
+  - Next.js
+  - React
+  - Tailwind CSS
+  - tailwind-merge
+- **Backend**:
+  - Express.js
+  - Python (for LLM interactions)
+  - TypeScript
+  - Langchain
+  - Groq
+- **Dependencies**:
+  - Node.js
+  - npm
+  - Python
+  - pip
 
+## 📦 Installation
+1. **Prerequisites**: Ensure you have Node.js, npm, Python, and pip installed on your system.
+2. **Clone the Repository**: Clone the project repository using `git clone`.
+3. **Install Dependencies**: Run `npm install` in the frontend directory and `pip install -r requirements.txt` in the backend directory.
+4. **Setup Environment Variables**: Set the necessary environment variables, such as `NEXT_PUBLIC_BACKEND_URL`.
+
+## 💻 Usage
+1. **Start the Frontend**: Run `npm run dev` in the frontend directory.
+2. **Start the Backend**: Run `npm run dev` in the backend directory.
+3. **Generate README**: Use the project's API to generate a README file for a given software project.
+
+## 📂 Project Structure
+```markdown
+project/
+├── backend/
+│   ├── src/
+│   │   ├── server.ts
+│   │   ├── routes/
+│   │   │   ├── readme.ts
+│   │   ├── utils/
+│   │   │   ├── clone-repo.ts
+│   │   │   ├── make-dir.ts
+│   │   ├── python/
+│   │   │   ├── agents.py
+│   │   │   ├── llm_fallback.py
+│   │   │   ├── tools.py
+│   │   │   ├── prompts.py
+│   ├── package.json
+├── frontend/
+│   ├── app/
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   ├── lib/
+│   │   ├── utils.ts
+│   │   ├── config.ts
+│   ├── package.json
+├── README.md
 ```
-readme-generator/
-├── frontend/           # Next.js React frontend
-├── backend/           # Express.js API server
-├── python/           # Python AI/ML scripts (formerly summariser-llm)
-└── package.json      # Root package.json for monorepo management
-```
 
-## 🚀 Quick Start
+## 📸 Screenshots
 
-### Prerequisites
-- Node.js (v16+)
-- Python 3.8+
-- npm or yarn
 
-### Installation
-
-1. **Install all dependencies:**
-```bash
-npm run install:all
-```
-
-2. **Set up Python environment:**
-```bash
-cd python
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
-```
-
-3. **Configure environment variables:**
-```bash
-# In frontend/.env.local
-NEXT_PUBLIC_BACKEND_URL=http://localhost:5000
-
-# In backend/.env (create if needed)
-PORT=5000
-```
-
-### Development
-
-**Start both frontend and backend concurrently:**
-```bash
-npm run dev
-```
-
-**Or start them individually:**
-```bash
-# Backend (Express server on port 5000)
-npm run dev:backend
-
-# Frontend (Next.js on port 3000)
-npm run dev:frontend
-```
-
-### Production Build
-
-```bash
-npm run build
-```
-
-## 📁 Detailed Structure
-
-### Frontend (`/frontend`)
-- **Technology:** Next.js 15, React 19, TypeScript
-- **UI:** Tailwind CSS, shadcn/ui components
-- **Port:** 3000 (development)
-
-### Backend (`/backend`)
-- **Technology:** Express.js, TypeScript
-- **Features:** API routes, file handling, repo cloning
-- **Port:** 5000
-- **Temp Files:** Created in `backend/temp/` directory
-
-### Python AI (`/python`)
-- **Technology:** Python with Groq AI
-- **Purpose:** Code analysis and README generation
-- **Virtual Environment:** `python/venv/`
-
-## 🔗 API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/generate-readme` | Generate README from GitHub repo |
-| GET | `/api/check-readme?folder=<name>` | Check if README exists |
-| GET | `/api/get-readme?folder=<name>` | Get README content |
-| GET | `/api/get-readme/:folder` | Get README by folder param |
-| GET | `/health` | Backend health check |
-
-## 🛠️ Development Notes
-
-### Key Changes from Original Structure:
-1. **Separated frontend and backend** for independent deployment
-2. **Moved temp folder** to `backend/temp/` instead of root
-3. **Updated Python path references** to `../python/` instead of `summariser-llm/`
-4. **Added API configuration** in frontend for backend communication
-5. **Created monorepo structure** with root-level scripts
-
-### File Paths Updated:
-- Python scripts: `python/agents_groq.py`
-- Python venv: `python/venv/bin/python`
-- Temp directory: `backend/temp/`
-
-## �� Deployment
-
-### Frontend Deployment (Vercel/Netlify)
-1. Deploy the `frontend/` folder
-2. Set environment variable: `NEXT_PUBLIC_BACKEND_URL=<your-backend-url>`
-
-### Backend Deployment (Railway/Heroku/VPS)
-1. Deploy the `backend/` folder
-2. Ensure Python environment is available
-3. Set PORT environment variable
-
-### Python Environment
-- Ensure the `python/` folder is accessible from the backend
-- Virtual environment should be activated and dependencies installed
+## 🤝 Contributing
+Contributions are welcome! Please submit a pull request with your changes and a brief description of what you've added or fixed.
 
 ## 📝 License
+This project is licensed under the MIT License.
 
-ISC
+## 📬 Contact
+For questions or concerns, please contact us at [support@example.com](mailto:support@example.com).
+
+## 💖 Thanks Message
+This is written by readme.ai - Your AI-powered README generator.
