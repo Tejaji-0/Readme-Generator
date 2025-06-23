@@ -1,82 +1,127 @@
-# 🧠 Readme Generator Project
-The Readme Generator Project is designed to automatically generate high-quality README files for GitHub repositories. This project aims to simplify the process of creating and maintaining README files, ensuring that they are informative, consistent, and visually appealing.
+# README Generator
 
-## 🚀 Features
-- **Automated README Generation**: The project uses advanced algorithms to generate README files based on the repository's content and structure.
-- **Real-time Preview**: The project provides a real-time preview of the generated README file, allowing users to make adjustments as needed.
-- **Support for Multiple Languages**: The project supports generation of README files in multiple languages, making it accessible to a broader audience.
+A full-stack application that automatically generates professional READMEs from your GitHub repositories using AI.
 
-## 🛠️ Tech Stack
-* **Frontend**: Next.js, React, TypeScript
-* **Backend**: Node.js, Python (for specific functionalities)
-* **Database**: Not applicable (focused on file generation)
-* **Build Tools**: Webpack, Babel
-* **Linting and Formatting**: ESLint, Prettier
-* **Styling**: Tailwind CSS
-
-## 📦 Installation
-To get started with the Readme Generator Project, follow these steps:
-1. Clone the repository: `git clone https://github.com/your-username/readme-generator.git`
-2. Install dependencies: `npm install` or `yarn install`
-3. Start the development server: `npm run dev` or `yarn dev`
-
-## 💻 Usage
-1. Navigate to `http://localhost:3000` in your web browser.
-2. Select a template or choose to generate a README from scratch.
-3. Fill in the required information, such as project name, description, and features.
-4. Preview the generated README file and make adjustments as needed.
-5. Download the generated README file or copy the content to your clipboard.
-
-## 📂 Project Structure
+## 🏗️ Project Structure
 
 ```
-
-├── app/
-│   ├── api/
-│   │   ├── check-readme/
-│   │   │   └── route.ts
-│   │   ├── generate-readme/
-│   │   │   └── route.ts
-│   │   ├── get-readme/
-│   │   │   ├── [folder]/
-│   │   │   │   └── route.ts
-│   │   │   └── route.ts
-│   │   └── lib/
-│   │       └── clone-repo.ts
-│   ├── layout.tsx
-│   └── page.tsx
-├── components/
-│   └── my-readme-page/
-│       └── MyReadmeComponent.tsx
-├── lib/
-│   └── utils.ts
-├── next.config.ts
-├── summariser-llm/
-│   ├── agents.py
-│   ├── prompts.py
-│   ├── requirements.txt
-│   └── tools.py
-└── README.md
+readme-generator/
+├── frontend/           # Next.js React frontend
+├── backend/           # Express.js API server
+├── python/           # Python AI/ML scripts (formerly summariser-llm)
+└── package.json      # Root package.json for monorepo management
 ```
 
-## 📸 Screenshots
+## 🚀 Quick Start
 
+### Prerequisites
+- Node.js (v16+)
+- Python 3.8+
+- npm or yarn
 
-## 🤝 Contributing
-Contributions are welcome and appreciated. To contribute to the Readme Generator Project, please follow these steps:
-1. Fork the repository: `git fork https://github.com/your-username/readme-generator.git`
-2. Create a new branch: `git checkout -b your-branch-name`
-3. Make your changes and commit them: `git commit -m "your-commit-message"`
-4. Push your changes to your fork: `git push origin your-branch-name`
-5. Create a pull request to merge your changes into the main repository.
+### Installation
+
+1. **Install all dependencies:**
+```bash
+npm run install:all
+```
+
+2. **Set up Python environment:**
+```bash
+cd python
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+3. **Configure environment variables:**
+```bash
+# In frontend/.env.local
+NEXT_PUBLIC_BACKEND_URL=http://localhost:5000
+
+# In backend/.env (create if needed)
+PORT=5000
+```
+
+### Development
+
+**Start both frontend and backend concurrently:**
+```bash
+npm run dev
+```
+
+**Or start them individually:**
+```bash
+# Backend (Express server on port 5000)
+npm run dev:backend
+
+# Frontend (Next.js on port 3000)
+npm run dev:frontend
+```
+
+### Production Build
+
+```bash
+npm run build
+```
+
+## 📁 Detailed Structure
+
+### Frontend (`/frontend`)
+- **Technology:** Next.js 15, React 19, TypeScript
+- **UI:** Tailwind CSS, shadcn/ui components
+- **Port:** 3000 (development)
+
+### Backend (`/backend`)
+- **Technology:** Express.js, TypeScript
+- **Features:** API routes, file handling, repo cloning
+- **Port:** 5000
+- **Temp Files:** Created in `backend/temp/` directory
+
+### Python AI (`/python`)
+- **Technology:** Python with Groq AI
+- **Purpose:** Code analysis and README generation
+- **Virtual Environment:** `python/venv/`
+
+## 🔗 API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/generate-readme` | Generate README from GitHub repo |
+| GET | `/api/check-readme?folder=<name>` | Check if README exists |
+| GET | `/api/get-readme?folder=<name>` | Get README content |
+| GET | `/api/get-readme/:folder` | Get README by folder param |
+| GET | `/health` | Backend health check |
+
+## 🛠️ Development Notes
+
+### Key Changes from Original Structure:
+1. **Separated frontend and backend** for independent deployment
+2. **Moved temp folder** to `backend/temp/` instead of root
+3. **Updated Python path references** to `../python/` instead of `summariser-llm/`
+4. **Added API configuration** in frontend for backend communication
+5. **Created monorepo structure** with root-level scripts
+
+### File Paths Updated:
+- Python scripts: `python/agents_groq.py`
+- Python venv: `python/venv/bin/python`
+- Temp directory: `backend/temp/`
+
+## �� Deployment
+
+### Frontend Deployment (Vercel/Netlify)
+1. Deploy the `frontend/` folder
+2. Set environment variable: `NEXT_PUBLIC_BACKEND_URL=<your-backend-url>`
+
+### Backend Deployment (Railway/Heroku/VPS)
+1. Deploy the `backend/` folder
+2. Ensure Python environment is available
+3. Set PORT environment variable
+
+### Python Environment
+- Ensure the `python/` folder is accessible from the backend
+- Virtual environment should be activated and dependencies installed
 
 ## 📝 License
-The Readme Generator Project is licensed under the MIT License.
 
-## 📬 Contact
-For questions, suggestions, or feedback, please contact us at [your-email@example.com](mailto:your-email@example.com).
-
-## 💖 Thanks Message
-A huge thank you to all the contributors, maintainers, and users of the Readme Generator Project. Your support and feedback are invaluable, and we're grateful for the opportunity to help simplify the process of creating high-quality README files. 🙏
-
-    
+ISC

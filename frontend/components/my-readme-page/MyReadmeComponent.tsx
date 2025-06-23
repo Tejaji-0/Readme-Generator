@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import ReadmeInfo from "./ReadmeInfo";
 import HighlightedEditableCode from "./HighlightedEditableCode";
 import ShimmerCodeEditor from "./ShimmerCodeEditor";
+import { API_BASE_URL } from "@/lib/config";
 
 interface MyReadmeComponentProps {
   onBackToHome: () => void;
@@ -38,11 +39,15 @@ export default function MyReadmeComponent({
     const maxAttempts = 100; // 30x2s = 60s max
 
     const checkForReadme = async (folder: string) => {
-      const res = await fetch(`/api/check-readme?folder=${folder}`);
+      const res = await fetch(
+        `${API_BASE_URL}/api/check-readme?folder=${folder}`
+      );
       const { exists } = await res.json();
 
       if (exists) {
-        const readmeRes = await fetch(`/api/get-readme?folder=${folder}`);
+        const readmeRes = await fetch(
+          `${API_BASE_URL}/api/get-readme?folder=${folder}`
+        );
         const { content } = await readmeRes.json();
         setReadmeContent(content);
         setLoading(false);

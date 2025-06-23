@@ -6,6 +6,7 @@ import { Button } from "../ui/button";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
+import { API_BASE_URL } from "@/lib/config";
 
 interface HeroSectionProps {
   onGenerateClick: () => void;
@@ -29,13 +30,15 @@ export default function HeroSection({ onGenerateClick }: HeroSectionProps) {
     onGenerateClick();
 
     localStorage.removeItem("projectFolder");
-    axios.post("/api/generate-readme", { githubLink }).then((res) => {
-      const fullPath = res.data.path;
-      const folderName = fullPath.split("/temp/")[1].split("/readme.md")[0];
-      localStorage.setItem("githubLink", githubLink);
-      localStorage.setItem("projectFolder", folderName);
-      console.log("Stored folder name:", folderName);
-    });
+    axios
+      .post(`${API_BASE_URL}/api/generate-readme`, { githubLink })
+      .then((res) => {
+        const fullPath = res.data.path;
+        const folderName = fullPath.split("/temp/")[1].split("/readme.md")[0];
+        localStorage.setItem("githubLink", githubLink);
+        localStorage.setItem("projectFolder", folderName);
+        console.log("Stored folder name:", folderName);
+      });
   };
 
   return (

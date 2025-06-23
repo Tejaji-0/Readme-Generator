@@ -1,21 +1,13 @@
 import path from "path";
 import fs from "fs";
 
-
-
-// STEP: 1 -> get the location of this proj folder (README_GENERATOR)
-const tempDir = path.join(process.cwd(), "temp");
+// STEP: 1 -> get the location of the backend folder and create temp inside it
+const tempDir = path.join(__dirname, "..", "..", "temp");
 /**
- * process.cwd() returns the root of your project.
-Example: /Users/lakshit/my-readme-generator
-
-path.join(process.cwd(), 'temp') becomes:
-➜ /Users/lakshit/my-readme-generator/temp
-
-So, tempDir = path to the folder where you will store all cloned repos.
+ * __dirname is the current directory of this file (backend/src/utils)
+ * Going up two levels (.., ..) gets us to the backend folder
+ * Then we add 'temp' to create the temp folder inside backend
  */
-
-
 
 // STEP: 2 -> Extract repo name from the link
 const extractRepoName = (url: string): string => {
@@ -23,16 +15,14 @@ const extractRepoName = (url: string): string => {
   return parts[parts.length - 1].replace(".git", "");
 };
 
-
-
-// STEP: 3 -> join both above results to form the fina; location to store cloned repo
+// STEP: 3 -> join both above results to form the final location to store cloned repo
 export const prepareClonePath = (repoUrl: string): string => {
   const repoName = extractRepoName(repoUrl);
   const repoPath = path.join(tempDir, repoName);
 
   // Make sure /temp exists
   if (!fs.existsSync(tempDir)) {
-    fs.mkdirSync(tempDir);
+    fs.mkdirSync(tempDir, { recursive: true });
   }
 
   // Clear old clone if it exists
