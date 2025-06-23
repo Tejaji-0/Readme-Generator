@@ -6,8 +6,9 @@ interface CTAProps {
 
 export default function CTA({ onGenerateClick }: CTAProps) {
   const handleClick = () => {
-    // Scroll to top to show the form
+    // Scroll to top to show the form and trigger generate click
     window.scrollTo({ top: 0, behavior: "smooth" });
+    onGenerateClick();
   };
 
   return (

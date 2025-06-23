@@ -230,6 +230,7 @@ function HighlightedEditableCode({ readmeContent }: { readmeContent: string }) {
                 </a>
               ),
               img: ({ src, alt }) => (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={src}
                   alt={alt}

@@ -14,6 +14,7 @@ const execPromise = util.promisify(exec);
 router.post(
   "/generate-readme",
   async (req: Request, res: Response): Promise<void> => {
+    let finalDestination = "";
     try {
       const { githubLink } = req.body;
       if (!githubLink) {
@@ -21,10 +22,13 @@ router.post(
         return;
       }
 
+      console.log(`Starting README generation for: ${githubLink}`);
+
       // this will make the directory. function is called.
-      const finalDestination = prepareClonePath(githubLink);
+      finalDestination = prepareClonePath(githubLink);
 
       //cloning the repo
+      console.log(`Cloning repository to: ${finalDestination}`);
       await cloneRepo(githubLink, finalDestination);
 
       // 📌 Call the Python agent - updated path to ../python
@@ -46,17 +50,36 @@ router.post(
         "bin",
         "python"
       );
+
+      console.log(`Running Python script: ${pythonScriptPath}`);
       const { stdout } = await execPromise(
-        `${venvPython} ${pythonScriptPath} ${finalDestination}`
+        `${venvPython} ${pythonScriptPath} ${finalDestination}`,
+        { timeout: 240000 } // 4 minutes timeout
       );
 
       const readmePath = path.join(finalDestination, "readme.md");
 
+      console.log(`README generated successfully at: ${readmePath}`);
+
       // You can return the summary here or pass it to GPT for README gen
       res.json({ readme: stdout.trim(), path: readmePath });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Cloning failed" });
+      console.error("Error in README generation:", err);
+
+      // Clean up on error
+      if (finalDestination && fs.existsSync(finalDestination)) {
+        try {
+          fs.rmSync(finalDestination, { recursive: true, force: true });
+          console.log(`Cleaned up directory: ${finalDestination}`);
+        } catch (cleanupErr) {
+          console.error("Error during cleanup:", cleanupErr);
+        }
+      }
+
+      res.status(500).json({
+        error: "README generation failed",
+        details: err instanceof Error ? err.message : "Unknown error",
+      });
     }
   }
 );

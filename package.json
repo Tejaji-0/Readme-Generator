@@ -5,7 +5,9 @@
     "scripts": {
         "dev:frontend": "cd frontend && npm run dev",
         "dev:backend": "cd backend && npm run dev",
+        "dev:backend-stable": "cd backend && npm run dev-stable",
         "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+        "dev-stable": "concurrently \"npm run dev:backend-stable\" \"npm run dev:frontend\"",
         "build:frontend": "cd frontend && npm run build",
         "build:backend": "cd backend && npm run build",
         "build": "npm run build:backend && npm run build:frontend",
