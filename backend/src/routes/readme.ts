@@ -39,19 +39,24 @@ router.post(
         "python",
         "agents_groq.py"
       );
-      const venvPython = path.resolve(
-        __dirname,
-        "..",
-        "..",
-        "python",
-        "venv",
-        "bin",
-        "python"
-      );
+
+      // Use system python (Render doesn't need venv)
+      const pythonCommand =
+        process.env.NODE_ENV === "production"
+          ? "python"
+          : path.resolve(
+              __dirname,
+              "..",
+              "..",
+              "python",
+              "venv",
+              "bin",
+              "python"
+            );
 
       console.log(`Running Python script: ${pythonScriptPath}`);
       const { stdout } = await execPromise(
-        `${venvPython} ${pythonScriptPath} ${finalDestination}`,
+        `${pythonCommand} ${pythonScriptPath} ${finalDestination}`,
         { timeout: 240000 } // 4 minutes timeout
       );
 

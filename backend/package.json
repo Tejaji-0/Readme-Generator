@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon src/server.ts",
     "dev-stable": "ts-node src/server.ts",
-    "build": "./render-build.sh",
+    "build": "tsc",
     "start": "node dist/server.js",
     "postinstall": "pip install -r ../python/requirements.txt",
     "test": "echo \"Error: no test specified\" && exit 1"

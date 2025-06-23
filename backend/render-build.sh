@@ -1,36 +1,20 @@
 #!/bin/bash
 set -e  # Exit on any error
 
-echo "Starting build process..."
+echo "Starting Render build process..."
 
 # Install Node.js dependencies
 echo "Installing Node.js dependencies..."
 npm install
 
-# Build TypeScript
+# Build TypeScript (directly call tsc to avoid circular reference)
 echo "Building TypeScript..."
-npm run build
+npx tsc
 
-# Install Python dependencies
-echo "Setting up Python environment..."
+# Install Python dependencies (no virtual environment on Render)
+echo "Installing Python dependencies..."
 cd python
-
-# Upgrade pip
-python -m pip install --upgrade pip
-
-# Install requirements
-echo "Installing Python requirements..."
-pip install -r requirements.txt
-
-# Create virtual environment if it doesn't exist
-if [ ! -d "venv" ]; then
-    echo "Creating Python virtual environment..."
-    python -m venv venv
-fi
-
-# Activate virtual environment and install dependencies
-echo "Activating virtual environment and installing dependencies..."
-source venv/bin/activate
+echo "Installing Python requirements globally..."
 pip install -r requirements.txt
 
 echo "Build completed successfully!" 
