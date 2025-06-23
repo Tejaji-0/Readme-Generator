@@ -77,8 +77,8 @@ export default function ShimmerCodeEditor() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            Larger repositories may take a little longer — your README is being
-            carefully crafted
+            Generation might take 2-3 minutes — your README is being carefully
+            crafted
           </motion.p>
 
           <motion.div
