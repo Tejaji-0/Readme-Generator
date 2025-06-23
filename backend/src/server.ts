@@ -28,6 +28,7 @@ app.use(
       "http://127.0.0.1:3001",
       "http://127.0.0.1:3002",
       "http://127.0.0.1:3003",
+      "https://readme-generator-phi.vercel.app",
       "https://*.vercel.app", // Allow all Vercel preview deployments
     ],
     credentials: true,

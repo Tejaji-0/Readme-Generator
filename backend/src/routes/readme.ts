@@ -31,10 +31,9 @@ router.post(
       console.log(`Cloning repository to: ${finalDestination}`);
       await cloneRepo(githubLink, finalDestination);
 
-      // 📌 Call the Python agent - updated path to ../python
+      // 📌 Call the Python agent - path within backend directory
       const pythonScriptPath = path.resolve(
         __dirname,
-        "..",
         "..",
         "..",
         "python",
@@ -42,7 +41,6 @@ router.post(
       );
       const venvPython = path.resolve(
         __dirname,
-        "..",
         "..",
         "..",
         "python",

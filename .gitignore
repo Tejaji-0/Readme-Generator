@@ -79,6 +79,10 @@ python/__pycache__/
 python/*.pyc
 python/venv/
 python/.venv/
+backend/python/__pycache__/
+backend/python/*.pyc
+backend/python/venv/
+backend/python/.venv/
 *.sqlite3
 .pytest_cache/
 
