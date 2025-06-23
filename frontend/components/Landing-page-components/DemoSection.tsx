@@ -1,7 +1,7 @@
 import { Eye } from "lucide-react";
 import Image from "next/image";
 import { MovingBorder } from "@/components/ui/moving-border";
-import demo2 from "@/public/demo-2.png";
+import demo2 from "@/public/Demo-2.png";
 
 export default function DemoSection() {
   return (
