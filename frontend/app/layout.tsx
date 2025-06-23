@@ -13,6 +13,9 @@ const fontSans = FontSans({
 export const metadata: Metadata = {
   title: "Readme.ai",
   description: "Generate a README for your project",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
