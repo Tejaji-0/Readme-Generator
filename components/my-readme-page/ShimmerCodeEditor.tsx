@@ -77,8 +77,8 @@ export default function ShimmerCodeEditor() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            This may take a few moments if your repository is large — hang tight
-            while we generate your README.
+            Larger repositories may take a little longer — your README is being
+            carefully crafted
           </motion.p>
 
           <motion.div
@@ -89,17 +89,17 @@ export default function ShimmerCodeEditor() {
           >
             <div className="flex space-x-1 justify-center">
               <motion.div
-                className="w-1.5 h-1.5 bg-slate-400 rounded-full"
+                className="w-1.5 h-1.5 bg-rose-200 rounded-full"
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ duration: 1.5, repeat: Infinity, delay: 0 }}
               />
               <motion.div
-                className="w-1.5 h-1.5 bg-slate-500 rounded-full"
+                className="w-1.5 h-1.5 bg-rose-300 rounded-full"
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
               />
               <motion.div
-                className="w-1.5 h-1.5 bg-slate-600 rounded-full"
+                className="w-1.5 h-1.5 bg-rose-400 rounded-full"
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ duration: 1.5, repeat: Infinity, delay: 0.6 }}
               />
