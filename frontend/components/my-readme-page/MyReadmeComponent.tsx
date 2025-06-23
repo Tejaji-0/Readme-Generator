@@ -39,21 +39,44 @@ export default function MyReadmeComponent({
     const maxAttempts = 100; // 30x2s = 60s max
 
     const checkForReadme = async (folder: string) => {
-      const res = await fetch(
-        `${API_BASE_URL}/api/check-readme?folder=${folder}`
-      );
-      const { exists } = await res.json();
-
-      if (exists) {
-        const readmeRes = await fetch(
-          `${API_BASE_URL}/api/get-readme?folder=${folder}`
+      try {
+        console.log(`🔍 Checking for README in folder: ${folder}`);
+        const res = await fetch(
+          `${API_BASE_URL}/api/check-readme?folder=${folder}`
         );
-        const { content } = await readmeRes.json();
-        setReadmeContent(content);
-        setLoading(false);
-        return true;
+
+        if (!res.ok) {
+          console.error(`❌ Check README request failed: ${res.status}`);
+          return false;
+        }
+
+        const { exists } = await res.json();
+        console.log(`📁 README exists: ${exists}`);
+
+        if (exists) {
+          console.log(`📖 Fetching README content...`);
+          const readmeRes = await fetch(
+            `${API_BASE_URL}/api/get-readme?folder=${folder}`
+          );
+
+          if (!readmeRes.ok) {
+            console.error(`❌ Get README request failed: ${readmeRes.status}`);
+            return false;
+          }
+
+          const { content } = await readmeRes.json();
+          console.log(
+            `✅ README content fetched: ${content.length} characters`
+          );
+          setReadmeContent(content);
+          setLoading(false);
+          return true;
+        }
+        return false;
+      } catch (error) {
+        console.error(`❌ Error checking for README:`, error);
+        return false;
       }
-      return false;
     };
 
     const interval = setInterval(async () => {
@@ -62,20 +85,32 @@ export default function MyReadmeComponent({
 
       if (folder && folder !== projectFolder) {
         setProjectFolder(folder);
-        console.log("Found folder name:", folder);
+        console.log("📂 Found folder name:", folder);
       }
 
       if (folder) {
+        console.log(
+          `🔄 Attempt ${
+            attempts + 1
+          }/${maxAttempts}: Checking for README in folder: ${folder}`
+        );
         // If we have a folder, check for README
         const found = await checkForReadme(folder);
         if (found) {
           clearInterval(interval);
           return;
         }
+      } else {
+        console.log(
+          `⏳ Attempt ${
+            attempts + 1
+          }/${maxAttempts}: Waiting for folder name...`
+        );
       }
 
       attempts++;
       if (attempts >= maxAttempts) {
+        console.log("⏰ Timeout reached, stopping polling");
         clearInterval(interval);
         setLoading(false);
         setReadmeContent("❌ Timed out while waiting for README generation.");

@@ -235,10 +235,10 @@ def run_agent(repo_path):
 
 # Save README to file
 def write_readme_to_file(content, root_dir="temp"):
-    path = os.path.join(root_dir, "README.md")
+    path = os.path.join(root_dir, "readme.md")
     with open(path, "w", encoding="utf-8") as f:
         f.write(content)
-    print(f"✅ README.md written to {path}")
+    print(f"✅ readme.md written to {path}")
 
 # Local test
 if __name__ == "__main__":

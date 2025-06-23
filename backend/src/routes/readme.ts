@@ -92,6 +92,7 @@ router.get("/check-readme", (req: Request, res: Response): void => {
   const folder = req.query.folder as string;
 
   if (!folder) {
+    console.log("❌ check-readme: Missing folder name");
     res.status(400).json({ error: "Missing folder name" });
     return;
   }
@@ -106,6 +107,9 @@ router.get("/check-readme", (req: Request, res: Response): void => {
   );
   const exists = fs.existsSync(readmePath);
 
+  console.log(
+    `🔍 check-readme: folder=${folder}, path=${readmePath}, exists=${exists}`
+  );
   res.json({ exists });
 });
 
@@ -114,6 +118,7 @@ router.get("/get-readme", (req: Request, res: Response): void => {
   const folder = req.query.folder as string;
 
   if (!folder) {
+    console.log("❌ get-readme: Missing folder name");
     res.status(400).json({ error: "Missing folder name" });
     return;
   }
@@ -127,10 +132,16 @@ router.get("/get-readme", (req: Request, res: Response): void => {
     "readme.md"
   );
 
+  console.log(`📖 get-readme: attempting to read from ${readmePath}`);
+
   try {
     const content = fs.readFileSync(readmePath, "utf-8");
+    console.log(
+      `✅ get-readme: successfully read ${content.length} characters`
+    );
     res.json({ content });
   } catch (err) {
+    console.error(`❌ get-readme: failed to read file`, err);
     res.status(404).json({ error: err });
   }
 });
@@ -147,7 +158,7 @@ router.get(
         "..",
         "temp",
         folder,
-        "README.md"
+        "readme.md"
       );
 
       const content = await readFile(readmePath, "utf-8");
