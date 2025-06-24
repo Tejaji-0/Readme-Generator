@@ -72,8 +72,6 @@ project/
 ## 🤝 Contributing
 Contributions are welcome! Please submit a pull request with your changes and a brief description of what you've added or fixed.
 
-## 📝 License
-This project is licensed under the MIT License.
 
 ## 📬 Contact
 For questions or concerns, please contact us at [lakshit7811@gmail.com](mailto:lakshit7811@gmail.com).
