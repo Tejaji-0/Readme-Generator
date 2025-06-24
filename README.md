@@ -76,7 +76,7 @@ Contributions are welcome! Please submit a pull request with your changes and a 
 This project is licensed under the MIT License.
 
 ## 📬 Contact
-For questions or concerns, please contact us at [support@example.com](mailto:support@example.com).
+For questions or concerns, please contact us at [lakshit7811@gmail.com](mailto:lakshit7811@gmail.com).
 
 ## 💖 Thanks Message
 This is written by readme.ai - Your AI-powered README generator.
