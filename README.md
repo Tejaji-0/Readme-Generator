@@ -7,6 +7,11 @@ This project aims to create a comprehensive and detailed README file for a given
 - **Technical Detailing**: Provides in-depth technical details about the project, including dependencies, setup instructions, and feature descriptions.
 - **Code Analysis**: Analyzes the project's code to extract relevant information and generate the README content.
 
+## 📸 Screenshots
+<img width="1436" alt="Screenshot 2025-06-24 at 6 08 38 PM" src="https://github.com/user-attachments/assets/665aade1-33a9-4554-b064-3b6df7b55005" />
+![Demo-2](https://github.com/user-attachments/assets/3835bff7-2cc4-44f5-bb3e-0004e899d2dc)
+
+
 ## 🛠️ Tech Stack
 - **Frontend**:
   - Next.js
@@ -63,8 +68,6 @@ project/
 │   ├── package.json
 ├── README.md
 ```
-
-## 📸 Screenshots
 
 
 ## 🤝 Contributing
