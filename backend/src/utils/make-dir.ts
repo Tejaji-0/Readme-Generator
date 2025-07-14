@@ -17,18 +17,16 @@ const extractRepoName = (url: string): string => {
 
 // STEP: 3 -> join both above results to form the final location to store cloned repo
 export const prepareClonePath = (repoUrl: string): string => {
-  const repoName = extractRepoName(repoUrl);
-  const repoPath = path.join(tempDir, repoName);
-
-  // Make sure /temp exists
+  // Ensure temp directory exists first
   if (!fs.existsSync(tempDir)) {
     fs.mkdirSync(tempDir, { recursive: true });
   }
 
-  // Clear old clone if it exists
-  if (fs.existsSync(repoPath)) {
-    fs.rmSync(repoPath, { recursive: true, force: true });
-  }
+  const repoName = extractRepoName(repoUrl);
+
+  // Use a timestamp to guarantee a fresh, unique folder for each generation run
+  const uniqueSuffix = Date.now().toString();
+  const repoPath = path.join(tempDir, `${repoName}-${uniqueSuffix}`);
 
   return repoPath;
 };

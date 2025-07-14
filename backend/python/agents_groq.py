@@ -12,6 +12,9 @@ import time
 
 # Load .env variables
 load_dotenv()
+def log(message: str):
+    print(message)
+    sys.stdout.flush()
 
 # ✅ Import fallback LLM manager
 from llm_fallback import LLMFallbackManager
@@ -48,7 +51,7 @@ def agent_select_files(state):
     # Show more files for better selection
     display_tree = filtered_tree[:max_files_to_show]
     
-    print(f"⚡ Balanced selection: {len(file_tree)} → {len(filtered_tree)} → {len(display_tree)} files")
+    log(f"⚡ Balanced selection: {len(file_tree)} → {len(filtered_tree)} → {len(display_tree)} files")
     
     # Use existing prompt
     prompt = select_files_prompt.format(file_tree="\n".join(display_tree))
@@ -67,7 +70,7 @@ def agent_select_files(state):
         else:
             selected_files = [line.strip().strip('"').strip(',') for line in raw.splitlines() if line.strip()]
     except Exception as e:
-        print("⚠️ Parsing failed, using fallback selection", e)
+        log("⚠️ Parsing failed, using fallback selection", e)
         # Smarter fallback for better accuracy
         important_files = []
         for file_path in display_tree:
@@ -80,7 +83,7 @@ def agent_select_files(state):
 
     # Balanced final selection
     final_selection = selected_files[:max_files_to_process]
-    print(f"✅ Selected {len(final_selection)} files for detailed processing")
+    log(f"✅ Selected {len(final_selection)} files for detailed processing")
     return {"selected_files": final_selection}
 
 # Step 2: Detailed bulk processing with accuracy focus
@@ -92,7 +95,7 @@ def agent_summarize_files(state):
     files_per_request = int(os.getenv('FILES_PER_REQUEST', '4'))  # Fewer files per call for better context
     max_content_per_file = int(os.getenv('MAX_CONTENT_PER_FILE', '2500'))  # More content for accuracy
     
-    print(f"🎯 Detailed bulk processing: {len(selected_files)} files, {files_per_request} per request")
+    log(f"🎯 Detailed bulk processing: {len(selected_files)} files, {files_per_request} per request")
     
     # Process in smaller batches for better accuracy
     for i in range(0, len(selected_files), files_per_request):
@@ -100,7 +103,7 @@ def agent_summarize_files(state):
         batch_num = (i // files_per_request) + 1
         total_batches = (len(selected_files) + files_per_request - 1) // files_per_request
         
-        print(f"🔍 Detailed batch {batch_num}/{total_batches}: {len(batch)} files")
+        log(f"🔍 Detailed batch {batch_num}/{total_batches}: {len(batch)} files")
         
         # Prepare detailed content for each file
         detailed_files = []
@@ -147,6 +150,7 @@ For each file, format your response as:
 **Integration:** [How it fits in the project]
 
 Provide comprehensive summaries for each file:"""
+        log(f"📖 Reading file: {filename}")
         
         try:
             messages = [{"role": "user", "content": bulk_prompt}]
@@ -155,10 +159,10 @@ Provide comprehensive summaries for each file:"""
             
             if bulk_response.strip():
                 summaries.append(bulk_response)
-                print(f"✅ Generated detailed summaries for {len(batch)} files")
+                log(f"✅ Generated detailed summaries for {len(batch)} files")
             else:
                 # Better fallback using individual processing
-                print(f"⚠️ Bulk failed, falling back to individual processing for batch {batch_num}")
+                log(f"⚠️ Bulk failed, falling back to individual processing for batch {batch_num}")
                 for filename in batch:
                     try:
                         content = read_file(filename)[:2000]  # Reasonable content size
@@ -172,7 +176,7 @@ Provide comprehensive summaries for each file:"""
                         summaries.append(f"### {filename}\n(Processing failed: {str(e)})")
                     
         except Exception as e:
-            print(f"⚠️ Batch {batch_num} failed, using individual fallback: {e}")
+            log(f"⚠️ Batch {batch_num} failed, using individual fallback: {e}")
             # Individual processing fallback for accuracy
             for filename in batch:
                 try:
@@ -186,7 +190,7 @@ Provide comprehensive summaries for each file:"""
                 except Exception as e:
                     summaries.append(f"### {filename}\n(Failed to process)")
     
-    print(f"✅ Detailed processing complete: {total_batches} API calls with enhanced accuracy")
+    log(f"✅ Detailed processing complete: {total_batches} API calls with enhanced accuracy")
     return {"summaries": summaries}
 
 # Step 3: Enhanced README generation with more detail
@@ -196,6 +200,9 @@ def agent_generate_readme(state):
     # Allow more summaries for comprehensive README
     max_summaries = int(os.getenv('MAX_SUMMARIES_FOR_README', '25'))
     limited_summaries = summaries[:max_summaries]
+    log("📝 Generating summary…")
+    log("📄 Generating README.md…")
+
 
     joined = "\n\n".join(limited_summaries)
 
@@ -217,6 +224,9 @@ IMPORTANT: Create a comprehensive and detailed README that provides developers w
 def run_agent(repo_path):
     set_repo_path(repo_path)
 
+    log("📥 Repository received")
+    log("⚙️ Initializing README generation process")
+
     builder = StateGraph(GraphState)
     builder.add_node("select_files", agent_select_files)
     builder.add_node("summarize", agent_summarize_files)
@@ -228,17 +238,19 @@ def run_agent(repo_path):
     builder.set_finish_point("generate_readme")
 
     graph = builder.compile()
+    log("🚀 Starting graph execution...")
     output = graph.invoke({})
     readme = output["readme"]
     write_readme_to_file(readme, root_dir=repo_path)
     return readme
+
 
 # Save README to file
 def write_readme_to_file(content, root_dir="temp"):
     path = os.path.join(root_dir, "readme.md")
     with open(path, "w", encoding="utf-8") as f:
         f.write(content)
-    print(f"✅ readme.md written to {path}")
+    log(f"✅ readme.md written to {path}")
 
 # Local test
 if __name__ == "__main__":

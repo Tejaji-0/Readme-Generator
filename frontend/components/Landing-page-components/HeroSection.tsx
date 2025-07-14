@@ -5,8 +5,6 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import axios from "axios";
-import { API_BASE_URL } from "@/lib/config";
 
 interface HeroSectionProps {
   onGenerateClick: () => void;
@@ -29,53 +27,12 @@ export default function HeroSection({ onGenerateClick }: HeroSectionProps) {
     // Switch to README view immediately
     onGenerateClick();
 
-    localStorage.removeItem("projectFolder");
+    // Persist the entered link so MyReadmeComponent can access it
+    localStorage.setItem("githubLink", githubLink);
 
-    // Show loading toast
-    const loadingToast = toast.loading(
-      "Generating README... This may take a few minutes for larger repositories."
+    toast.success(
+      "Starting README generation… you can watch the live logs now!"
     );
-
-    axios
-      .post(
-        `${API_BASE_URL}/api/generate-readme`,
-        { githubLink },
-        {
-          timeout: 300000, // 5 minutes timeout for larger repositories
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      .then((res) => {
-        toast.dismiss(loadingToast);
-        toast.success("README generated successfully!");
-        const fullPath = res.data.path;
-        const folderName = fullPath.split("/temp/")[1].split("/readme.md")[0];
-        localStorage.setItem("githubLink", githubLink);
-        localStorage.setItem("projectFolder", folderName);
-        console.log("Stored folder name:", folderName);
-      })
-      .catch((error) => {
-        toast.dismiss(loadingToast);
-        console.error("Error generating README:", error);
-        if (
-          error.code === "ECONNABORTED" ||
-          error.message.includes("timeout")
-        ) {
-          toast.error(
-            "Request timed out. Large repositories may take longer to process. Please try again."
-          );
-        } else if (error.code === "ERR_NETWORK") {
-          toast.error(
-            "Network error. Please ensure the backend server is running and try again."
-          );
-        } else {
-          toast.error(
-            "Failed to generate README. Please check your repository link and try again."
-          );
-        }
-      });
   };
 
   return (

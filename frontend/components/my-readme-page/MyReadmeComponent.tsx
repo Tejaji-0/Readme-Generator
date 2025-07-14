@@ -1,12 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "../ui/button";
 import { ArrowLeft } from "lucide-react";
 import ReadmeInfo from "./ReadmeInfo";
 import HighlightedEditableCode from "./HighlightedEditableCode";
-import ShimmerCodeEditor from "./ShimmerCodeEditor";
 import { API_BASE_URL } from "@/lib/config";
+// Magic UI terminal components for better log visualization
+import {
+  Terminal,
+  AnimatedSpan,
+  TypingAnimation,
+} from "@/components/magicui/terminal";
+
+import StarArrowHint from "@/components/StarArrowHint";
+import { motion } from "motion/react";
 
 interface MyReadmeComponentProps {
   onBackToHome: () => void;
@@ -16,114 +24,174 @@ export default function MyReadmeComponent({
   onBackToHome,
 }: MyReadmeComponentProps) {
   const [readmeContent, setReadmeContent] = useState("");
+  const [logs, setLogs] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [projectFolder, setProjectFolder] = useState<string | null>(null);
+
+  // Ref for auto-scrolling terminal
+  const terminalRef = useRef<HTMLDivElement>(null);
+
+  // Determine log color based on content
+  const getLogClass = (log: string) => {
+    if (log.startsWith("❌") || /error/i.test(log)) return "text-red-500";
+    if (/✔|✓|✅|success/i.test(log)) return "text-green-500";
+    if (/⚠|warn|warning/i.test(log)) return "text-yellow-400";
+    if (/ℹ|info/i.test(log)) return "text-blue-400";
+    return "text-gray-300";
+  };
+
+  /**
+   * Parse individual SSE message chunks ("data: ...\n\n") coming from backend
+   * basically SSE se data jaise aa raha usko as it is nhi dikha skte to usko sudhar rahe
+   */
+  const handleSSEMessage = (raw: string) => {
+    // Remove the leading "data:" if present and trim white-space
+    const data = raw.replace(/^data:\s*/, "").trim();
+
+    if (!data) return;
+
+    if (data.startsWith("[README]")) {
+      // The rest is base64-encoded README markdown
+      const base64 = data.replace("[README]", "");
+      try {
+        const binary = window.atob(base64);
+        const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+        const decoded = new TextDecoder("utf-8").decode(bytes);
+        setReadmeContent(decoded);
+      } catch (e) {
+        console.error("Failed to decode README content", e);
+      }
+      setLoading(false);
+    } else if (data.startsWith("[DONE]")) {
+      // Generation completed – README will arrive in a separate event
+    } else if (data.startsWith("[ERROR]")) {
+      // Error message from backend
+      setLogs((prev) => [...prev, `❌ ${data}`]);
+      setLoading(false);
+    } else {
+      // Regular log line
+      setLogs((prev) => [...prev, data]);
+    }
+  };
 
   // Extract project name from folder path
   const getProjectName = (folder: string | null) => {
     if (!folder) return undefined;
-    // Extract the last part of the folder path as project name
     const parts = folder.split("/");
-    const projectName = parts[parts.length - 1];
-
-    // Format: replace hyphens/underscores with spaces and capitalize each word
-    return projectName
+    return parts[parts.length - 1]
       .replace(/[-_]/g, " ")
-      .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(" ");
+      .replace(/\b\w/g, (char) => char.toUpperCase());
   };
 
+  // Generate README
   useEffect(() => {
-    let attempts = 0;
-    const maxAttempts = 100; // 30x2s = 60s max
+    const githubLink = localStorage.getItem("githubLink");
+    if (!githubLink) return;
 
-    const checkForReadme = async (folder: string) => {
+    async function generateReadme(link: string) {
       try {
-        console.log(`🔍 Checking for README in folder: ${folder}`);
-        const res = await fetch(
-          `${API_BASE_URL}/api/check-readme?folder=${folder}`
-        );
+        const response = await fetch(`${API_BASE_URL}/api/generate-readme`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ githubLink: link }),
+        });
 
-        if (!res.ok) {
-          console.error(`❌ Check README request failed: ${res.status}`);
-          return false;
+        if (!response.ok || !response.body) {
+          throw new Error(`Failed with status ${response.status}`);
         }
 
-        const { exists } = await res.json();
-        console.log(`📁 README exists: ${exists}`);
+        const folderName = link.split("/").pop() || null;
+        setProjectFolder(folderName);
 
-        if (exists) {
-          console.log(`📖 Fetching README content...`);
-          const readmeRes = await fetch(
-            `${API_BASE_URL}/api/get-readme?folder=${folder}`
-          );
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let buffer = "";
 
-          if (!readmeRes.ok) {
-            console.error(`❌ Get README request failed: ${readmeRes.status}`);
-            return false;
-          }
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
 
-          const { content } = await readmeRes.json();
-          console.log(
-            `✅ README content fetched: ${content.length} characters`
-          );
-          setReadmeContent(content);
-          setLoading(false);
-          return true;
+          buffer += decoder.decode(value, { stream: true });
+
+          // Split on double new-line which signifies end of an SSE event
+          const parts = buffer.split("\n\n");
+          buffer = parts.pop() || ""; // keep incomplete chunk in buffer
+
+          parts.forEach(handleSSEMessage);
         }
-        return false;
-      } catch (error) {
-        console.error(`❌ Error checking for README:`, error);
-        return false;
-      }
-    };
 
-    const interval = setInterval(async () => {
-      // First check if we have a folder name
-      const folder = localStorage.getItem("projectFolder");
-
-      if (folder && folder !== projectFolder) {
-        setProjectFolder(folder);
-        console.log("📂 Found folder name:", folder);
-      }
-
-      if (folder) {
-        console.log(
-          `🔄 Attempt ${
-            attempts + 1
-          }/${maxAttempts}: Checking for README in folder: ${folder}`
-        );
-        // If we have a folder, check for README
-        const found = await checkForReadme(folder);
-        if (found) {
-          clearInterval(interval);
-          return;
-        }
-      } else {
-        console.log(
-          `⏳ Attempt ${
-            attempts + 1
-          }/${maxAttempts}: Waiting for folder name...`
-        );
-      }
-
-      attempts++;
-      if (attempts >= maxAttempts) {
-        console.log("⏰ Timeout reached, stopping polling");
-        clearInterval(interval);
+        // Handle any remaining buffered data
+        if (buffer) handleSSEMessage(buffer);
+      } catch (err) {
+        console.error("Error streaming README generation:", err);
+        setLogs((prev) => [
+          ...prev,
+          `❌ Error streaming README generation: ${String(err)}`,
+        ]);
         setLoading(false);
-        setReadmeContent("❌ Timed out while waiting for README generation.");
       }
-    }, 2000); // poll every 2s
+    }
 
-    return () => clearInterval(interval);
-  }, [projectFolder]);
+    generateReadme(githubLink);
+  }, []);
+
+  // Auto-scroll to bottom when new logs are added
+  useEffect(() => {
+    if (terminalRef.current) {
+      terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
+    }
+  }, [logs]);
 
   return (
     <main>
       {loading ? (
-        <ShimmerCodeEditor />
+        <div className="w-full px-8 py-8 space-y-8">
+          {/* Center heading section */}
+          <div className="text-center space-y-3">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-4xl font-bold bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent"
+            >
+              README Magic ✨
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.8 }}
+              className="text-gray-600 text-xl font-medium"
+            >
+              We&apos;re crafting your perfect README
+            </motion.p>
+          </div>
+
+          {/* Terminal and arrow section */}
+          <div className="flex w-full justify-center items-start gap-8">
+            <Terminal
+              ref={terminalRef}
+              className="flex-1 overflow-y-auto bg-black p-6 font-mono text-sm shadow-2xl shadow-rose-300/80 rounded-xl"
+            >
+              {logs.length === 0 ? (
+                <TypingAnimation className="text-gray-400">
+                  Waiting for logs...
+                </TypingAnimation>
+              ) : (
+                logs.map((log, idx) => (
+                  <AnimatedSpan key={idx} className={getLogClass(log)}>
+                    {log}
+                  </AnimatedSpan>
+                ))
+              )}
+            </Terminal>
+
+            <div className="w-[30%] flex justify-end items-start">
+              <StarArrowHint />
+            </div>
+          </div>
+        </div>
       ) : (
         <>
           <div className="flex flex-row-reverse justify-between px-24 my-10">
@@ -140,7 +208,6 @@ export default function MyReadmeComponent({
               </div>
             </div>
 
-            {/* ReadmeInfo Section - Show when not loading */}
             <div className="mb-6">
               <ReadmeInfo
                 projectName={getProjectName(projectFolder)}
