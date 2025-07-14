@@ -10,9 +10,9 @@ const PORT = process.env.PORT || 5001;
 
 // Increase server timeout for long-running operations
 app.use((req, res, next) => {
-  // Set timeout to 5 minutes (300000ms)
-  req.setTimeout(300000);
-  res.setTimeout(300000);
+  // Set timeout to 15 minutes (900000ms) for large repositories
+  req.setTimeout(900000);
+  res.setTimeout(900000);
   next();
 });
 
@@ -66,5 +66,5 @@ const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// Increase server timeout
-server.timeout = 300000; // 5 minutes
+// Increase server timeout to 15 minutes for large repositories
+server.timeout = 900000; // 15 minutes
