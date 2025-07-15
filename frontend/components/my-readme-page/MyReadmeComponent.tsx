@@ -33,9 +33,9 @@ export default function MyReadmeComponent({
 
   // Determine log color based on content
   const getLogClass = (log: string) => {
-    // Colour key-switch logs blue and retry warnings yellow
-    if (log.startsWith("🔁")) return "text-blue-400";
-    if (log.startsWith("[RETRY]")) return "text-yellow-400";
+    // Colour key-switch logs blue and retry warnings yellow (handle possible prefixes)
+    if (log.includes("[RETRY]")) return "text-yellow-400";
+    if (log.includes("🔁")) return "text-green-400";
     if (log.startsWith("❌") || /error/i.test(log)) return "text-red-500";
     if (/✔|✓|✅|success/i.test(log)) return "text-green-500";
     if (/⚠|warn|warning/i.test(log)) return "text-yellow-400";
@@ -72,8 +72,11 @@ export default function MyReadmeComponent({
       setLogs((prev) => [...prev, `❌ ${data}`]);
       setLoading(false);
     } else {
-      // Regular log line
-      setLogs((prev) => [...prev, data]);
+      // Regular or retry log line – shorten noisy retry errors
+      const displayLog = data.includes("[RETRY]")
+        ? "⚠️ Rate limit hit – don't worry we are switching API key…"
+        : data;
+      setLogs((prev) => [...prev, displayLog]);
     }
   };
 

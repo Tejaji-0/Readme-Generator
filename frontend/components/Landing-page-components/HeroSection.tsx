@@ -91,6 +91,12 @@ export default function HeroSection({ onGenerateClick }: HeroSectionProps) {
               onChange={(e) => {
                 setGithubLink(e.target.value);
               }}
+              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleSubmit();
+                }
+              }}
               type="link"
               placeholder="https://github.com/username/repo"
               className="w-full h-14 pl-12 pr-40 text-base rounded-xl border-2 border-rose-200/50 
