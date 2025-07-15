@@ -68,11 +68,6 @@ project/
 ├── README.md
 └── ...
 ```
-
-## 📸 Screenshots
-
- 
-
 ## 🤝 Contributing
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 1. Fork the Project
@@ -87,4 +82,4 @@ Contributions are what make the open-source community such an amazing place to l
 
 ## 💖 Thanks Message
 This project was made possible thanks to the contributions of many individuals and the support of our community. 
-This is written by readme.ai for better documentation.
+This is written by [readme.ai](https://readme-generator-phi.vercel.app/) for better documentation.
