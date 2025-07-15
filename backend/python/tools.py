@@ -8,11 +8,39 @@ def set_repo_path(path):
     repo_base_path = path
 
 
-# Step 1: List all files in the cloned repo (recursively)
+# Step 1: List all files in the cloned repo (recursively) with filtering
 def get_file_tree():
     file_tree = []
-    for dirpath, _, filenames in os.walk(repo_base_path):
+    
+    # Directories to skip completely
+    skip_dirs = {
+        'node_modules', '.git', '__pycache__', '.venv', 'venv', 'env',
+        'dist', 'build', '.next', '.nuxt', 'coverage', '.nyc_output',
+        '.cache', 'tmp', 'temp', '.tmp', '.temp', 'logs', '.DS_Store',
+        'vendor', 'bower_components', '.gradle', '.idea', '.vscode',
+        '.pytest_cache', '.mypy_cache', '.tox', '.eggs'
+    }
+    
+    # File extensions to skip
+    skip_extensions = {
+        '.pyc', '.pyo', '.pyd', '.so', '.dll', '.dylib', '.exe', '.bin',
+        '.log', '.tmp', '.temp', '.cache', '.pid', '.lock', '.swp', '.swo',
+        '.DS_Store', '.coverage', '.nyc_output', '.min.js', '.min.css'
+    }
+    
+    for dirpath, dirnames, filenames in os.walk(repo_base_path):
+        # Filter out directories we want to skip
+        dirnames[:] = [d for d in dirnames if d not in skip_dirs]
+        
         for filename in filenames:
+            # Skip files with problematic extensions
+            if any(filename.endswith(ext) for ext in skip_extensions):
+                continue
+                
+            # Skip hidden files (except important ones)
+            if filename.startswith('.') and filename not in {'.env', '.gitignore', '.dockerignore'}:
+                continue
+                
             full_path = os.path.join(dirpath, filename)
             rel_path = os.path.relpath(full_path, repo_base_path) 
             file_tree.append(rel_path)

@@ -66,7 +66,7 @@ class LLMFallbackManager:
     def get_model(self):
         return self.models[self.model_index]
 
-    def make_request(self, messages, max_tokens=2048, temperature=0.2, max_retries=10):
+    def make_request(self, messages, max_tokens=2048, temperature=0.2, max_retries=15):
         last_error = None
         for attempt in range(max_retries):
             try:

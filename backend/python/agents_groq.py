@@ -20,7 +20,13 @@ def log(message: str):
 from llm_fallback import LLMFallbackManager
 
 # Initialize fallback-based LLM
-llm = LLMFallbackManager()
+try:
+    llm = LLMFallbackManager()
+    log("✅ Groq LLM initialized successfully")
+except Exception as e:
+    # If Groq initialization fails, log the error and stop execution.
+    log(f"❌ Groq LLM failed to initialize: {str(e)}")
+    raise
 
 # Graph state structure
 class GraphState(TypedDict):
@@ -70,7 +76,7 @@ def agent_select_files(state):
         else:
             selected_files = [line.strip().strip('"').strip(',') for line in raw.splitlines() if line.strip()]
     except Exception as e:
-        log("⚠️ Parsing failed, using fallback selection", e)
+        log(f"⚠️ Parsing failed, using fallback selection: {str(e)}")
         # Smarter fallback for better accuracy
         important_files = []
         for file_path in display_tree:
@@ -203,7 +209,6 @@ def agent_generate_readme(state):
     log("📝 Generating summary…")
     log("📄 Generating README.md…")
 
-
     joined = "\n\n".join(limited_summaries)
 
     # Enhanced instruction for more detailed README
@@ -214,39 +219,110 @@ IMPORTANT: Create a comprehensive and detailed README that provides developers w
     # Use existing prompt with enhancement
     prompt = generate_readme_prompt.format(summaries=joined) + enhanced_instruction
     
-    # Increased token limit for detailed README
-    response = llm.make_request([{"role": "user", "content": prompt}], max_tokens=4500)
-    
-    return {"readme": response}
+    try:
+        # Try with normal token limit first
+        response = llm.make_request([{"role": "user", "content": prompt}], max_tokens=4500)
+        return {"readme": response}
+    except Exception as e:
+        log(f"⚠️ High-quality generation failed: {str(e)}")
+        log("🔄 Attempting fallback generation with reduced requirements...")
+        
+        # Fallback: Shorter prompt, fewer tokens
+        fallback_prompt = f"""
+Generate a professional README.md for this project based on the file summaries:
+
+{joined[:3000]}  
+
+Include: project title, description, features, tech stack, installation, and usage.
+Keep it concise but informative.
+"""
+        
+        try:
+            response = llm.make_request([{"role": "user", "content": fallback_prompt}], max_tokens=2000)
+            log("✅ Fallback generation successful")
+            return {"readme": response}
+        except Exception as fallback_error:
+            log(f"❌ Fallback generation also failed: {str(fallback_error)}")
+            
+            # Last resort: Basic template
+            basic_readme = f"""# Project README
+
+## Description
+This project contains the following components:
+
+{chr(10).join([f"- {summary.split(chr(10))[0]}" for summary in limited_summaries[:5]])}
+
+## Installation
+1. Clone this repository
+2. Install dependencies
+3. Run the application
+
+## Usage
+Please refer to the source code and documentation for usage instructions.
+
+## Contributing
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+---
+*This README was generated automatically when API limits were reached.*
+"""
+            log("⚠️ Using basic template README due to API failures")
+            return {"readme": basic_readme}
 
 
 # Build LangGraph graph
 def run_agent(repo_path):
-    set_repo_path(repo_path)
+    try:
+        set_repo_path(repo_path)
+        log("📥 Repository received")
+        log("⚙️ Initializing README generation process")
 
-    log("📥 Repository received")
-    log("⚙️ Initializing README generation process")
+        # Test LLM connection first
+        try:
+            test_response = llm.make_request([{"role": "user", "content": "Hello, please respond with 'OK'"}], max_tokens=10)
+            log(f"✅ LLM connection test successful: {test_response[:20]}")
+        except Exception as e:
+            log(f"❌ LLM connection failed: {str(e)}")
+            raise Exception("LLM connection failed")
 
-    builder = StateGraph(GraphState)
-    builder.add_node("select_files", agent_select_files)
-    builder.add_node("summarize", agent_summarize_files)
-    builder.add_node("generate_readme", agent_generate_readme)
+        builder = StateGraph(GraphState)
+        builder.add_node("select_files", agent_select_files)
+        builder.add_node("summarize", agent_summarize_files)
+        builder.add_node("generate_readme", agent_generate_readme)
 
-    builder.set_entry_point("select_files")
-    builder.add_edge("select_files", "summarize")
-    builder.add_edge("summarize", "generate_readme")
-    builder.set_finish_point("generate_readme")
+        builder.set_entry_point("select_files")
+        builder.add_edge("select_files", "summarize")
+        builder.add_edge("summarize", "generate_readme")
+        builder.set_finish_point("generate_readme")
 
-    graph = builder.compile()
-    log("🚀 Starting graph execution...")
-    output = graph.invoke({})
-    readme = output["readme"]
-    write_readme_to_file(readme, root_dir=repo_path)
-    return readme
+        log("🚀 Starting graph execution...")
+        graph = builder.compile()
+        output = graph.invoke({})
+        
+        if not output or "readme" not in output:
+            log("❌ Graph execution failed - no output generated")
+            raise Exception("Graph execution failed")
+            
+        readme = output["readme"]
+        if not readme or len(readme.strip()) == 0:
+            log("❌ Generated README is empty")
+            raise Exception("Generated README is empty")
+            
+        log(f"✅ README generated successfully: {len(readme)} characters")
+        write_readme_to_file(readme, root_dir=repo_path)
+        return readme
+        
+    except Exception as e:
+        log(f"❌ Fatal error in run_agent: {str(e)}")
+        import traceback
+        log(f"❌ Traceback: {traceback.format_exc()}")
+        raise e
 
 
 # Save README to file
 def write_readme_to_file(content, root_dir="temp"):
+    # Ensure the directory exists
+    os.makedirs(root_dir, exist_ok=True)
     path = os.path.join(root_dir, "readme.md")
     with open(path, "w", encoding="utf-8") as f:
         f.write(content)
