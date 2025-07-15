@@ -87,7 +87,7 @@ class LLMFallbackManager:
             except Exception as e:
                 last_error = e
                 err_str = str(e).lower()
-                print(f"❌ Error: {e}")
+                print(f"[RETRY] {str(e).splitlines()[0]}")
 
                 if "rate limit" in err_str or "too many requests" in err_str:
                     self._mark_key_on_cooldown(seconds=60)

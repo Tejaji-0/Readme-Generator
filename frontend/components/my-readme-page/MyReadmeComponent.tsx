@@ -33,11 +33,14 @@ export default function MyReadmeComponent({
 
   // Determine log color based on content
   const getLogClass = (log: string) => {
+    // Colour key-switch logs blue and retry warnings yellow
+    if (log.startsWith("🔁")) return "text-blue-400";
+    if (log.startsWith("[RETRY]")) return "text-yellow-400";
     if (log.startsWith("❌") || /error/i.test(log)) return "text-red-500";
     if (/✔|✓|✅|success/i.test(log)) return "text-green-500";
     if (/⚠|warn|warning/i.test(log)) return "text-yellow-400";
     if (/ℹ|info/i.test(log)) return "text-blue-400";
-    return "text-gray-300";
+    return "text-gray-300 text-wrap";
   };
 
   /**
