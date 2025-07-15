@@ -28,7 +28,9 @@ export default function StarArrowHint() {
 
       {/* Waiting animation dots */}
       <div className="flex items-center space-x-1 mt-4">
-        <span className="text-gray-600 text-sm">Generating README</span>
+        <span className="text-gray-600 text-sm">
+          Generating README might take a while
+        </span>
         <div className="flex space-x-1">
           {[0, 1, 2].map((i) => (
             <motion.div
