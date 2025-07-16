@@ -6,8 +6,15 @@ import re
 from typing import List
 from groq import Groq
 from dotenv import load_dotenv
+import google.generativeai as genai
 
 load_dotenv()
+
+# === Gemini configuration ===
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+DEFAULT_GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash") if GEMINI_API_KEY else None
+if GEMINI_API_KEY:
+    genai.configure(api_key=GEMINI_API_KEY)
 
 API_KEYS = [
     os.getenv("GROQ_API_KEY"),
@@ -28,8 +35,21 @@ FALLBACK_MODELS = [
 
 class LLMFallbackManager:
     def __init__(self):
+        # --- Gemini setup ---
+        self.gemini_model = None
+        if GEMINI_API_KEY and DEFAULT_GEMINI_MODEL:
+            try:
+                self.gemini_model = genai.GenerativeModel(DEFAULT_GEMINI_MODEL)
+                print(f"🚀 Using Gemini model '{DEFAULT_GEMINI_MODEL}' as primary LLM")
+            except Exception as e:
+                print(f"⚠️  Failed to initialize Gemini ({e}), will rely on Groq fallback")
+                self.gemini_model = None
+
         if not API_KEYS:
-            raise Exception("No GROQ API keys found in environment.")
+            if self.gemini_model is None:
+                raise Exception("Neither GROQ API keys nor Gemini API key found in environment.")
+            else:
+                print("⚠️  No GROQ API keys found; operating in Gemini-only mode.")
         self.api_keys = API_KEYS
         self.models = FALLBACK_MODELS
         self.key_index = 0
@@ -66,7 +86,41 @@ class LLMFallbackManager:
     def get_model(self):
         return self.models[self.model_index]
 
+    # Helper: convert messages to prompt
+    def _messages_to_prompt(self, messages: List[dict]) -> str:
+        prompt_lines = []
+        for msg in messages:
+            role = msg.get("role", "user")
+            content = msg.get("content", "")
+            prompt_lines.append(f"{role.capitalize()}: {content}")
+        return "\n".join(prompt_lines)
+
     def make_request(self, messages, max_tokens=2048, temperature=0.2, max_retries=15):
+        # 1️⃣ Try Gemini
+        if self.gemini_model is not None:
+            try:
+                prompt_text = self._messages_to_prompt(messages)
+                response = self.gemini_model.generate_content(
+                    prompt_text,
+                    generation_config={
+                        "temperature": temperature,
+                        "max_output_tokens": max_tokens,
+                    },
+                )
+                try:
+                    content = "".join([part.text for part in response.parts])
+                except AttributeError:
+                    content = getattr(response, "text", str(response))
+                print("Response received successfully")
+                return content
+            except Exception as gem_err:
+                print(f"❌ Gemini failed ({gem_err}); falling back to Groq...")
+                self.gemini_model = None
+
+        # Groq fallback
+        if not self.api_keys:
+            raise Exception("Gemini failed and no GROQ_API_KEYs provided for fallback.")
+
         last_error = None
         for attempt in range(max_retries):
             try:

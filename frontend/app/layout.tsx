@@ -3,6 +3,7 @@ import { Source_Sans_3 as FontSans } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/common/Header";
 import Footer from "@/components/common/footer";
+import { Analytics } from "@vercel/analytics/next";
 
 const fontSans = FontSans({
   variable: "--font-sans",
@@ -37,6 +38,7 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
           <Footer />
         </div>
+        <Analytics />
       </body>
     </html>
   );
