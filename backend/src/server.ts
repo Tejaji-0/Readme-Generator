@@ -33,6 +33,7 @@ app.use(
         "http://127.0.0.1:3002",
         "http://127.0.0.1:3003",
         "https://readme-generator-phi.vercel.app",
+        "https://readme-generator-hxr6.onrender.com",
       ];
 
       // Allow all Vercel preview deployments
@@ -57,7 +58,7 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 // Routes
 app.use("/api", readmeRoutes);
 
-// Health check endpoint
+// for uptime robot
 app.get("/health", (req, res) => {
   res.json({ status: "OK", message: "Backend server is running" });
 });

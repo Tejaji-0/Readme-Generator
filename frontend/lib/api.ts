@@ -1,12 +1,14 @@
+import { API_BASE_URL } from "./config";
+
 export const generateReadme = (
   githubLink: string,
   onMessage: (data: string) => void,
   onError: (error: string) => void
 ) => {
-  const eventSource = new EventSource("/api/generate-readme");
+  const eventSource = new EventSource(`${API_BASE_URL}/api/generate-readme`);
 
   // Send POST body (fallback since EventSource doesn’t allow POST natively)
-  fetch("/api/generate-readme", {
+  fetch(`${API_BASE_URL}/api/generate-readme`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ githubLink }),
@@ -38,7 +40,7 @@ export const generateReadme = (
  */
 export const getReadme = async (folder: string): Promise<string> => {
   const res = await fetch(
-    `/api/get-readme?folder=${encodeURIComponent(folder)}`
+    `${API_BASE_URL}/api/get-readme?folder=${encodeURIComponent(folder)}`
   );
   if (!res.ok) throw new Error("Failed to fetch README");
   const data = await res.json();
