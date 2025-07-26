@@ -3,7 +3,7 @@ import { FileText, Github } from "lucide-react";
 
 export default function Header() {
   return (
-    <div className="flex justify-between items-center p-10 px-24">
+    <div className="flex justify-between items-center p-10 md:px-24">
       <Link href="/">
         <div className="flex items-center gap-2">
           <FileText

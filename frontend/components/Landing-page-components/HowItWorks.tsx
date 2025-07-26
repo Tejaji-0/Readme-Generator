@@ -8,7 +8,7 @@ import {
 
 export default function HowItWorks() {
   return (
-    <div className="py-16 mt-4">
+    <div className="md:py-16 py-8 mt-4">
       <h1 className="text-center text-3xl font-bold text-rose-500 mb-12">
         How It Works
       </h1>
@@ -28,7 +28,7 @@ export default function HowItWorks() {
           </div>
 
           {/* Arrow 1 */}
-          <div className="my-4 md:my-0 md:mx-4 flex flex-col items-center justify-center">
+          <div className="md:mx-4 flex flex-col items-center justify-center">
             <ArrowDown className="h-6 w-6 text-rose-200 block md:hidden" />
             <MoveRight
               size={32}
@@ -50,7 +50,7 @@ export default function HowItWorks() {
           </div>
 
           {/* Arrow 2 */}
-          <div className="my-4 md:my-0 md:mx-4 flex flex-col items-center justify-center">
+          <div className="md:mx-4 flex flex-col items-center justify-center">
             <ArrowDown className="h-6 w-6 text-rose-200 block md:hidden" />
             <MoveRight
               size={32}

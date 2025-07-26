@@ -13,10 +13,10 @@ export default function CTA({ onGenerateClick }: CTAProps) {
 
   return (
     <div className="text-center py-16">
-      <h1 className="text-4xl font-extrabold">
+      <h1 className="text-4xl font-extrabold w-90 md:w-full">
         Done Writing Docs? Let AI Take Over.
       </h1>
-      <h2 className="text-gray-600 py-4 w-1/3 mx-auto">
+      <h2 className="text-gray-600 py-4 md:w-1/3 w-8/12 mx-auto">
         Instantly turn your GitHub repo into a polished README. Save time, stay
         focused on building.
       </h2>

@@ -3,7 +3,7 @@ import { Github, Linkedin, Twitter } from "lucide-react";
 export default function Footer() {
   return (
     <footer className="w-full border-t border-rose-100 bg-white/80 backdrop-blur-sm py-6 mt-16 ">
-      <div className="max-w-4xl mx-auto px-4 flex justify-between flex-row-reverse items-center gap-2 ">
+      <div className="max-w-4xl mx-auto px-4 flex justify-between flex-col-reverse gap-4 md:flex-row-reverse items-center md:gap-2 ">
         <div className="flex gap-4 mb-1">
           <a
             href="https://github.com/LakshitAgarwal"

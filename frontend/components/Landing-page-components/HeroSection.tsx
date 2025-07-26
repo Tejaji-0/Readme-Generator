@@ -39,14 +39,14 @@ export default function HeroSection({ onGenerateClick }: HeroSectionProps) {
     <div className="text-center">
       {/* Badge */}
       <div
-        className="relative inline-flex items-center px-6 py-2.5 rounded-full 
+        className="relative inline-flex items-center md:px-6 px-3 md:py-2.5 py-1.5 rounded-full
         bg-gradient-to-r from-rose-100 via-pink-100 to-indigo-100 
         bg-[length:200%_200%] animate-[gradientMove_8s_ease_infinite] 
         text-rose-600 shadow-md overflow-hidden border border-white/30 
         backdrop-blur-sm"
       >
-        <Sparkles className="h-5 w-5 text-rose-500 animate-[pingSlow_2s_infinite]" />
-        <span className="ml-2 text-base font-medium bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent">
+        <Sparkles className="h-4 w-4 md:h-5 md:w-5 text-rose-500 animate-[pingSlow_2s_infinite]" />
+        <span className="ml-2 text-sm md:text-base font-medium bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent">
           Powered by AI
         </span>
 
@@ -76,7 +76,7 @@ export default function HeroSection({ onGenerateClick }: HeroSectionProps) {
           </span>
         </h1>
 
-        <h2 className="text-xl font-medium sm:text-[21px] mt-4 text-gray-500 max-w-2xl mx-auto">
+        <h2 className="md:text-xl font-medium sm:text-[21px] mt-4 text-gray-500 max-w-3/4 md:max-w-2xl mx-auto">
           Automatically generate professional READMEs from your codebase.
         </h2>
       </div>
