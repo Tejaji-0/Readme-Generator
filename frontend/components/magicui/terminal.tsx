@@ -103,7 +103,7 @@ export const Terminal = forwardRef<HTMLDivElement, TerminalProps>(
         ref={ref}
         className={cn(
           // Allow consumer to control sizing; remove fixed max-h/w constraints
-          "z-0 max-w-[60%] h-[70vh] rounded-xl border border-border bg-background",
+          "z-0 md:max-w-[60%] h-[70vh] rounded-xl border border-border bg-background",
           className
         )}
       >

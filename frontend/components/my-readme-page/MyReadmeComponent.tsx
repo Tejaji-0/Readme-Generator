@@ -193,14 +193,14 @@ export default function MyReadmeComponent({
               )}
             </Terminal>
 
-            <div className="w-[30%] flex justify-end items-start">
+            <div className="w-[30%] hidden md:flex justify-end items-start">
               <StarArrowHint />
             </div>
           </div>
         </div>
       ) : (
         <>
-          <div className="flex flex-row-reverse justify-between px-24 my-10">
+          <div className="flex flex-row-reverse justify-between md:px-24 px-4 md:my-10 my-4">
             <div className="flex items-center justify-between">
               <div className="mb-6">
                 <Button
@@ -208,7 +208,7 @@ export default function MyReadmeComponent({
                   variant="outline"
                   className="flex items-center rounded-full gap-2  cursor-pointer transition-all duration-200 ease-in-out border border-rose-500 shadow-md shadow-rose-100 hover:bg-rose-100/50"
                 >
-                  <ArrowLeft className="h-4 w-4 text-rose-500" />
+                  <ArrowLeft className="md:h-4 md:w-4 h-3 w-3 text-rose-500" />
                   Back to Home
                 </Button>
               </div>

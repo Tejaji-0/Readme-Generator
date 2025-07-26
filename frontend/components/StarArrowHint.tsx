@@ -5,7 +5,7 @@ import { motion } from "motion/react";
 
 export default function StarArrowHint() {
   return (
-    <div className="flex flex-col items-center justify-start space-y-4 pointer-events-none -mt-16">
+    <div className="hidden md:flex flex-col items-center justify-start space-y-4 pointer-events-none -mt-16">
       {/* Animated arrow - moved up */}
       <motion.div
         animate={{ y: [0, -10, 0] }}

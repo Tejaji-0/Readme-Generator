@@ -37,9 +37,9 @@ function HighlightedEditableCode({ readmeContent }: { readmeContent: string }) {
   }, [code]);
 
   return (
-    <div className="flex gap-8 px-10">
+    <div className="md:flex gap-8 md:px-10 px-4">
       {/* Editor Panel */}
-      <div className="relative border border-gray-700 rounded-3xl overflow-hidden bg-gray-900 w-1/2 shadow-xl shadow-gray-900">
+      <div className="relative border border-gray-700 rounded-3xl overflow-hidden bg-gray-900 md:w-1/2 w-full shadow-xl shadow-gray-900">
         <Editor
           height={`${editorHeight}px`}
           defaultLanguage="markdown"
@@ -110,7 +110,7 @@ function HighlightedEditableCode({ readmeContent }: { readmeContent: string }) {
       </div>
 
       {/* GitHub-style Preview Panel */}
-      <div className="w-1/2 border border-gray-300 rounded-3xl bg-rose-50/50 shadow-xl shadow-rose-900">
+      <div className="md:w-1/2 w-full border mt-16 md:mt-0 border-gray-300 rounded-3xl bg-rose-50/50 shadow-xl shadow-rose-900">
         <div className="bg-white border-t  border-rose-300 px-4 py-2 text-sm font-medium text-gray-700 flex items-center gap-2 rounded-t-3xl">
           📖 Preview
         </div>
