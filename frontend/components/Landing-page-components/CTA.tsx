@@ -13,7 +13,7 @@ export default function CTA({ onGenerateClick }: CTAProps) {
 
   return (
     <div className="text-center py-16">
-      <h1 className="text-4xl font-extrabold w-90 md:w-full">
+      <h1 className="text-4xl font-extrabold w-[90%] mx-auto md:w-full">
         Done Writing Docs? Let AI Take Over.
       </h1>
       <h2 className="text-gray-600 py-4 md:w-1/3 w-8/12 mx-auto">
