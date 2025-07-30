@@ -4,6 +4,7 @@ import { cloneRepo } from "../utils/clone-repo";
 import path from "path";
 import fs from "fs";
 import { readFile } from "fs/promises";
+import Repository from "../models/repository";
 
 const router = express.Router();
 import { spawn } from "child_process";
@@ -19,6 +20,9 @@ router.post(
         res.status(400).json({ error: "Github link is required" });
         return;
       }
+
+      const newRepository = new Repository({ url: githubLink });
+      await newRepository.save();
 
       // ----- Begin streaming response immediately -----
       res.writeHead(200, {

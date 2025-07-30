@@ -30,6 +30,7 @@
     "license": "ISC",
     "dependencies": {
         "@vercel/analytics": "^1.5.0",
-        "cors": "^2.8.5"
+        "cors": "^2.8.5",
+        "mongoose": "^8.17.0"
     }
 }

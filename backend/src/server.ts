@@ -2,11 +2,13 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import readmeRoutes from "./routes/readme";
+import mongoose from "mongoose";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5001;
+const MONGODB_URI = process.env.MONGODB_URI;
 
 // Increase server timeout for long-running operations
 app.use((req, res, next) => {
@@ -62,6 +64,16 @@ app.use("/api", readmeRoutes);
 app.get("/health", (req, res) => {
   res.json({ status: "OK", message: "Backend server is running" });
 });
+
+if (MONGODB_URI)
+  mongoose
+    .connect(MONGODB_URI)
+    .then(() => console.log("Successfully connected to MongoDB."))
+    .catch((err) => {
+      console.error("Connection error", err);
+      process.exit();
+    });
+else console.error("MONGO_URI not found in .env file");
 
 const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
