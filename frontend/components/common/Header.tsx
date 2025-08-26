@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { FileText, Github } from "lucide-react";
+import { FileText } from "lucide-react";
+import { GitHubStarsButton } from "@/components/animate-ui/buttons/github-stars";
 
 export default function Header() {
   return (
@@ -16,12 +17,7 @@ export default function Header() {
         </div>
       </Link>
       <div>
-        <Link
-          href="https://github.com/LakshitAgarwal/Readme-Generator"
-          target="_blank"
-        >
-          <Github size={36} />
-        </Link>
+        <GitHubStarsButton username="LakshitAgarwal" repo="Readme-Generator" />
       </div>
     </div>
   );
