@@ -38,6 +38,8 @@ app.use(
         "https://readme-generator-hxr6.onrender.com",
         "https://readmeai.tech",
         "http://readmeai.tech",
+        "https://www.readmeai.tech",
+        "http://www.readmeai.tech",
       ];
 
       // Allow all Vercel preview deployments
