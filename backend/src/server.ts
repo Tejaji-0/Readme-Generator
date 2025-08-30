@@ -36,6 +36,8 @@ app.use(
         "http://127.0.0.1:3003",
         "https://readme-generator-phi.vercel.app",
         "https://readme-generator-hxr6.onrender.com",
+        "https://readmeai.tech",
+        "http://readmeai.tech",
       ];
 
       // Allow all Vercel preview deployments
