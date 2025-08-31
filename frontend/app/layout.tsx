@@ -13,9 +13,13 @@ const fontSans = FontSans({
 
 export const metadata: Metadata = {
   title: "Readme.ai",
-  description: "Generate a README for your project",
+  description: "Generate free and professional README for your project",
   icons: {
     icon: "/favicon.png",
+  },
+  twitter: {
+    title: "Readme.ai",
+    card: "summary_large_image",
   },
 };
 
