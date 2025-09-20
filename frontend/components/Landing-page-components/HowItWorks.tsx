@@ -19,10 +19,10 @@ export default function HowItWorks() {
             <div className="mb-4 flex items-center justify-center h-16 w-16 rounded-2xl bg-rose-100/60 shadow-md">
               <Link className="h-8 w-8 text-rose-500" />
             </div>
-            <div className="font-bold text-lg text-gray-900 mb-1">
+            <div className="font-bold text-lg text-foreground mb-1">
               Paste Your Repository Link
             </div>
-            <div className="text-gray-500 text-sm">
+            <div className="text-muted-foreground text-sm">
               Just drop your GitHub repo URL
             </div>
           </div>
@@ -41,10 +41,10 @@ export default function HowItWorks() {
             <div className="mb-4 flex items-center justify-center h-16 w-16 rounded-2xl bg-rose-100/60 shadow-md">
               <BrainCircuit className="h-8 w-8 text-rose-500" />
             </div>
-            <div className="font-bold text-lg text-gray-900 mb-1">
+            <div className="font-bold text-lg text-foreground mb-1">
               Let AI Analyze & Generate
             </div>
-            <div className="text-gray-500 text-sm">
+            <div className="text-muted-foreground text-sm">
               Our AI reads your codebase, then crafts a tailored README.md.
             </div>
           </div>
@@ -63,10 +63,10 @@ export default function HowItWorks() {
             <div className="mb-4 flex items-center justify-center h-16 w-16 rounded-2xl bg-rose-100/60 shadow-md">
               <FileOutput className="h-8 w-8 text-rose-500" />
             </div>
-            <div className="font-bold text-lg text-gray-900 mb-1">
+            <div className="font-bold text-lg text-foreground mb-1">
               Get Your Polished README
             </div>
-            <div className="text-gray-500 text-sm">
+            <div className="text-muted-foreground text-sm">
               Download or copy your clean, professional README
             </div>
           </div>
