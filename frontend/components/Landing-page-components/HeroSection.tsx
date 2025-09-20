@@ -1,6 +1,6 @@
 "use client";
 
-import { Sparkles, Link as LinkIcon, Check, X, AlertCircle } from "lucide-react";
+import { Sparkles, Link as LinkIcon, Check, X } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import toast, { Toaster } from "react-hot-toast";
@@ -46,19 +46,13 @@ export default function HeroSection({
     
     const validation = checkAndCorrectGithubLink(githubLink);
     
-    if (validation.isValid && validation.correctedUrl === githubLink) {
+    // Treat both valid and correctable URLs as "valid" (green) for simplicity
+    if (validation.isValid) {
       return { 
         state: 'valid', 
         isValid: true, 
         correctedUrl: validation.correctedUrl,
         message: 'Valid GitHub URL' 
-      };
-    } else if (validation.isValid && validation.correctedUrl !== githubLink) {
-      return { 
-        state: 'correctable', 
-        isValid: true, 
-        correctedUrl: validation.correctedUrl,
-        message: `Will be corrected to: ${validation.correctedUrl}` 
       };
     } else {
       return { 
@@ -79,8 +73,6 @@ export default function HeroSection({
     switch (urlValidation.state) {
       case 'valid':
         return <Check className="h-4 w-4 text-green-500" />;
-      case 'correctable':
-        return <AlertCircle className="h-4 w-4 text-amber-500" />;
       case 'invalid':
         return <X className="h-4 w-4 text-red-500" />;
       default:
@@ -95,8 +87,6 @@ export default function HeroSection({
     switch (urlValidation.state) {
       case 'valid':
         return `${baseClasses} pr-12 border-green-300 bg-green-50/30 focus:border-green-400 focus:ring-green-100`;
-      case 'correctable':
-        return `${baseClasses} pr-12 border-amber-300 bg-amber-50/30 focus:border-amber-400 focus:ring-amber-100`;
       case 'invalid':
         return `${baseClasses} pr-12 border-red-300 bg-red-50/30 focus:border-red-400 focus:ring-red-100`;
       default:
@@ -232,8 +222,6 @@ export default function HeroSection({
                 ? 'text-gray-500'
                 : urlValidation.state === 'valid' 
                 ? 'text-green-600' 
-                : urlValidation.state === 'correctable'
-                ? 'text-amber-600'
                 : 'text-red-600'
             }`}>
               {isTyping ? 'Checking URL...' : urlValidation.message}
